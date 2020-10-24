@@ -1,3 +1,4 @@
+import kivy
 from opensky_api import OpenSkyApi
 api = OpenSkyApi()
 states = api.get_states()
