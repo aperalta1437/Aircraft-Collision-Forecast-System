@@ -1,0 +1,136 @@
+#:include locations_mapview.kv
+
+<MessagePopup>:
+    back_color : 0,0,0,1
+
+    Label:
+        text: root.message
+        size_hint: 0.6, 0.2
+        pos_hint: {"x": 0.2, "top": 0.8}
+
+    Button:
+        text: "Close"
+        size_hint: 0.35, 0.3
+        pos_hint: {"x": 0.33, "y": 0.1}
+        on_release: root.popup_window.dismiss()
+
+
+<LoginView>:
+    back_color : 50/255.0, 50/255.0, 50/255.0, 255/255.0
+
+    Label:
+        text: 'Username'
+        size_hint: 0.3, 0.2
+        pos_hint: {"x": 0.1, "top": 0.8}
+        font_size: "26sp"
+
+    Label:
+        text: 'Password'
+        size_hint: 0.3, 0.2
+        pos_hint: {"x": 0.1, "y": 0.4}
+        font_size: "26sp"
+
+    TextInput:
+        size_hint: 0.45, 0.11
+        pos_hint: {"x": 0.45, "y": 0.65}
+        font_size: "26sp"
+
+    TextInput:
+        size_hint: 0.45, 0.11
+        pos_hint: {"x": 0.45, "y": 0.45}
+        font_size: "26sp"
+
+    Button:
+        text: "Close"
+        size_hint: 0.40, 0.15
+        font_size: "26sp"
+        pos_hint: {"x": 0.07, "y": 0.1}
+
+    Button:
+        text: "Log in"
+        size_hint: 0.40, 0.15
+        font_size: "26sp"
+        pos_hint: {"x": 0.53, "y": 0.1}
+
+
+
+<MainLayout>:
+
+    btn_toggle_airports: btn_toggle_airports
+    btn_toggle_airplanes: btn_toggle_airplanes
+    locations_map: locations_map
+
+    NewBoxLayout:
+        size: root.width, root.height
+        orientation: "horizontal"
+        padding: 17
+        spacing: 5
+        back_color: 225/255.0, 225/255.0, 225/255.0, 255/255.0
+
+        LocationsMapView:
+            id: locations_map
+
+        NewFloatLayout:
+            id: main_menu_layout
+            cols: 2
+            size_hint: 0.5, 1
+            back_color: 220/255.0, 220/255.0, 220/255.0, 255/255.0
+            spacing: 10
+
+            ToggleButton:
+                id: btn_toggle_airports
+                size_hint: 0.47, 0.05
+                pos_hint: {"x": 0.02, "y": 0.01}
+                text: "Show Airports" if btn_toggle_airports.state == "normal" else "Hide Airports"
+                on_press: root.toggle_airports()
+
+            ToggleButton:
+                id: btn_toggle_airplanes
+                size_hint: 0.47, 0.05
+                pos_hint: {"x": 0.51, "y": 0.01}
+                text: "Show Airplanes" if btn_toggle_airplanes.state == "normal" else "Hide Airplanes"
+                on_press: root.toggle_airplanes()
+
+            Label:
+                color: 0,0,0,1
+                font_size: "20sp"
+                size_hint: 0.37, 0.05
+                pos_hint: {"x": 0.05, "y": 0.08}
+                text: "{:<20s}".format("Zoom level: " + str(locations_map.zoom))
+
+            Label:
+                color: 0,0,0,1
+                font_size: "20sp"
+                pos_hint: {"x": 0.02, "y": 0.94}
+                size_hint: 0.3, 0.05
+                text: "IATA Code:"
+
+            Button:
+                id: btn
+                text: 'Press'
+                on_parent: airports_dropdown.dismiss()
+                on_release: airports_dropdown.open(btn)
+                height: '48dp'
+                pos_hint: {"x": 0.33, "y": 0.94}
+                size_hint: 0.65, 0.05
+
+            DropDown:
+                id: airports_dropdown
+                on_select: btn.text = '{}'.format(args[1])
+
+                Button:
+                    text: 'First Item'
+                    size_hint_y: None
+                    height: '48dp'
+                    on_release: airports_dropdown.select('First Item')
+
+                Label:
+                    text: 'Second Item'
+                    size_hint_y: None
+                    height: '48dp'
+
+                Button:
+                    text: 'Third Item'
+                    size_hint_y: None
+                    height: '48dp'
+                    on_release: airports_dropdown.select('Third Item')
