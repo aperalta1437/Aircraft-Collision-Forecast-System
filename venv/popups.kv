@@ -1,0 +1,13 @@
+<MessagePopup>:
+    back_color : 0,0,0,1
+
+    Label:
+        text: root.message
+        size_hint: 0.6, 0.2
+        pos_hint: {"x": 0.2, "top": 0.8}
+
+    Button:
+        text: "Close"
+        size_hint: 0.35, 0.3
+        pos_hint: {"x": 0.33, "y": 0.1}
+        on_release: root.popup_window.dismiss()

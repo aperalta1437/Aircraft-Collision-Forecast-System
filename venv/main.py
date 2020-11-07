@@ -9,8 +9,10 @@ from modified_classes import NewGridLayout
 from modified_classes import NewFloatLayout
 from kivy.uix.label import Label
 from kivy.properties import ObjectProperty
-from kivy.uix.popup import Popup
+from popups import show_message_popup
 from kivy.uix.modalview import ModalView
+from login_view import LoginView
+
 
 # import kivy
 # kivy.require('1.9.0')
@@ -33,7 +35,6 @@ class MainLayout(Widget):
                 self.btn_toggle_airports.state = 'normal'
                 show_message_popup("Zoom level must be greater than 5.")
 
-
     def toggle_airplanes(self):
         if self.locations_map.show_airplanes:
             self.locations_map.show_airplanes = False
@@ -44,22 +45,6 @@ class MainLayout(Widget):
             else:
                 self.btn_toggle_airplanes.state = 'normal'
                 show_message_popup("Zoom level must be greater than 5.")
-
-
-def show_message_popup(message):
-    popup_window = Popup(title="INFO", size_hint=(None, None), size=(400, 200))
-    popup_content = MessagePopup(popup_window, message)
-    popup_window.content = popup_content
-    popup_window.open()
-
-
-class MessagePopup(NewFloatLayout):
-    message = None
-    popup_window = None
-    def __init__(self, popup_window, message=None):
-        self.message = message
-        self.popup_window = popup_window
-        super().__init__()
 
 
 class MainApp(MDApp):
@@ -73,18 +58,14 @@ class MainApp(MDApp):
         # Config.set('graphics', 'width', '1050')
         # Config.set('graphics', 'height', '800')
         # Config.write()
-        Window.clearcolor = (0,0,0,1)
+        Window.clearcolor = (0, 0, 0, 1)
         Window.size = (1200, 800)
         self.airports_connection = sqlite3.connect("global_airports.db")
         self.airports_cursor = self.airports_connection.cursor()
 
         login_window = ModalView(size_hint=(None, None), size=(500, 400), auto_dismiss=False)
-        login_window.add_widget(LoginView())
+        login_window.add_widget(LoginView(login_window))
         login_window.open()
-
-
-class LoginView(NewFloatLayout):
-    pass
 
 
 if __name__ == "__main__":
