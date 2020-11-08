@@ -1,0 +1,4 @@
+#No specific version, will install the latest one
+kivy
+-e git://github.com/openskynetwork/opensky-api.git#egg=opensky-api
+# mapview ??????
