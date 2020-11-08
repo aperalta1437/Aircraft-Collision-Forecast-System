@@ -66,11 +66,3 @@ class Graph:
         for element in self.edges:
             print(element[0].get_icao24_code(), element[1].get_icao24_code(), self.edges[element])
 
-
-new_graph = Graph()
-new_graph.add_vertex("iii", 300)
-new_graph.add_vertex("WWWW", 600)
-new_graph.add_vertex("zzz", 700)
-new_graph.print_vertices()
-new_graph.create_edges()
-new_graph.print_edges()
