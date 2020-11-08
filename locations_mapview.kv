@@ -1,0 +1,13 @@
+#: import MapView kivy_garden.mapview.MapView
+
+<LocationsMapView>:
+    double_tap_zoom: True
+    lat: 35
+    lon: 0
+    zoom: 2
+    on_lat:
+        self.start_getting_locations_in_fov()
+    on_lon:
+        self.start_getting_locations_in_fov()
+    on_zoom:
+        self.zoom = 2 if self.zoom < 2 else self.zoom
