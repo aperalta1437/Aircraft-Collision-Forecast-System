@@ -1,4 +1,6 @@
 #No specific version, will install the latest one
 kivy
--e git://github.com/openskynetwork/opensky-api.git#egg=opensky-api
-# mapview ??????
+kivy-garden
+mapView
+git+git://github.com/openskynetwork/opensky-api#egg=opensky-api&subdirectory=python #installs OpenSkyNetwork API
+
