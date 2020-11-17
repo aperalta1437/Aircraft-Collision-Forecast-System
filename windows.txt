@@ -1,0 +1,6 @@
+-r requirements.txt
+#install the latest versions
+kivy-deps.angle
+kivy-deps.glew
+kivy-deps.gstreamer
+kivy-deps.sdl2
