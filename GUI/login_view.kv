@@ -1,0 +1,45 @@
+<LoginView>:
+
+    username_input: username_input
+    password_input: password_input
+    back_color : 50/255.0, 50/255.0, 50/255.0, 255/255.0
+    size_hint: 0.9, 0.8
+
+    Label:
+        text: 'Username'
+        size_hint: 0.3, 0.2
+        pos_hint: {"x": 0.1, "top": 0.8}
+        font_size: "26sp"
+
+    Label:
+        text: 'Password'
+        size_hint: 0.3, 0.2
+        pos_hint: {"x": 0.1, "y": 0.4}
+        font_size: "26sp"
+
+    TextInput:
+        id: username_input
+        size_hint: 0.45, 0.13
+        pos_hint: {"x": 0.45, "y": 0.65}
+        font_size: "26sp"
+
+    TextInput:
+        id: password_input
+        password: True
+        size_hint: 0.45, 0.13
+        pos_hint: {"x": 0.45, "y": 0.45}
+        font_size: "26sp"
+
+    Button:
+        text: "Close"
+        size_hint: 0.40, 0.17
+        font_size: "26sp"
+        pos_hint: {"x": 0.07, "y": 0.1}
+        on_release: root.close_app()
+
+    Button:
+        text: "Log in"
+        size_hint: 0.40, 0.17
+        font_size: "26sp"
+        pos_hint: {"x": 0.53, "y": 0.1}
+        on_release: root.log_in()
