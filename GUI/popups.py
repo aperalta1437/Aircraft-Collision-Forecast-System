@@ -1,9 +1,8 @@
 from kivy.app import App
 from kivy.uix.popup import Popup
-from modified_classes import NewFloatLayout
+from GUI.modified_classes import NewFloatLayout
 from kivy.properties import BooleanProperty
 from kivy.uix.modalview import ModalView
-from kivy.uix.progressbar import ProgressBar
 from kivy.properties import ObjectProperty
 
 

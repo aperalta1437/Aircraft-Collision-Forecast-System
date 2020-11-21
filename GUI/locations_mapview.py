@@ -1,9 +1,8 @@
 from kivy_garden.mapview import MapView
 from kivy.clock import Clock
 from kivy.app import App
+from GUI.airport_marker import AirportMarker
 
-from airport_marker import AirportMarker
-from airplane_marker import AirplaneMarker
 
 class LocationsMapView(MapView):
     getting_locations_timer = None

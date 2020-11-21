@@ -1,22 +1,15 @@
 from kivy.core.window import Window
 from kivymd.app import MDApp
-from locations_mapview import LocationsMapView
 import sqlite3
 from kivy.uix.widget import Widget
-from kivy.uix.layout import Layout
-from kivy.uix.boxlayout import BoxLayout
-from modified_classes import NewGridLayout
-from modified_classes import NewFloatLayout
-from kivy.uix.label import Label
 from kivy.properties import ObjectProperty
-from kivy.properties import BooleanProperty
-from popups import show_message_popup, show_loading_popup
+from GUI.popups import show_message_popup
 from kivy.uix.modalview import ModalView
-from login_view import LoginView
-from settings_view import SettingsView
-from data_manager import DataManager
-from kivy.clock import Clock
+from GUI.login_view import LoginView
+from GUI.settings_view import SettingsView
+from GUI.data_manager import DataManager
 from threading import Thread
+from GUI.locations_mapview import LocationsMapView
 
 # import kivy
 # kivy.require('1.9.0')
@@ -74,10 +67,10 @@ class MainApp(MDApp):
         # Config.write()
         Window.clearcolor = (0,0,0,1)
         Window.size = (1200, 800)
-        self.airports_connection = sqlite3.connect("global_airports.db")
+        self.airports_connection = sqlite3.connect("DATA\\global_airports.db")
         self.airports_cursor = self.airports_connection.cursor()
 
-        settings_connection = sqlite3.connect('AIRCRAFT_COLLISION_FORECAST_SYSTEM.db')
+        settings_connection = sqlite3.connect('DATA\\AIRCRAFT_COLLISION_FORECAST_SYSTEM.db')
         settings_cursor = settings_connection.cursor()
         query = f"SELECT STATE FROM SETTINGS WHERE NAME = 'SHOW LOGIN WINDOW'"
         settings_cursor.execute(query)
@@ -95,7 +88,7 @@ class MainApp(MDApp):
             # progress_bar.set_stage_name('Loading Airports...')
             self.data_manager = DataManager()
             #Clock.schedule_once(self.set_data_manager, 2)
-            Thread(target=self.data_manager.load_data).start()
+            Thread(target=self.data_manager.load_airports).start()
 
 
 

@@ -1,8 +1,8 @@
 from kivy.app import App
 import sqlite3
 from kivy.properties import ObjectProperty
-from modified_classes import NewFloatLayout
-from popups import show_question_popup
+from GUI.modified_classes import NewFloatLayout
+from GUI.popups import show_question_popup
 
 class SettingsView(NewFloatLayout):
     btn_toggle_login_window = ObjectProperty(None)
@@ -12,7 +12,7 @@ class SettingsView(NewFloatLayout):
         self.settings_window = window
         self.app = App.get_running_app()
         self.saved = True
-        self.setting_connection = sqlite3.connect('AIRCRAFT_COLLISION_FORECAST_SYSTEM.db')
+        self.setting_connection = sqlite3.connect('DATA\\AIRCRAFT_COLLISION_FORECAST_SYSTEM.db')
         self.setting_cursor = self.setting_connection.cursor()
 
         super(SettingsView, self).__init__()
@@ -23,7 +23,7 @@ class SettingsView(NewFloatLayout):
 
         self.btn_toggle_login_window.text = 'ON' if self.show_login_window == '1' else 'OFF'
         self.btn_toggle_login_window.state = 'down' if self.show_login_window == '1' else 'normal'
-
+        # TODO Fix On/OFF button
 
 
     def turn_login_window(self):
