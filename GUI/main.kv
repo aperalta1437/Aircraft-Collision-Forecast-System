@@ -1,4 +1,5 @@
 #:include locations_mapview.kv
+#:include settings_panel_view.kv
 #:include popups.kv
 #:include login_view.kv
 #:include settings_view.kv
@@ -11,6 +12,8 @@
     btn_toggle_airplanes: btn_toggle_airplanes
     locations_map: locations_map
     airports_dropdown: airports_dropdown.__self__
+    settings_panel: settings_panel
+
 
     NewBoxLayout:
         size: root.width, root.height
@@ -19,8 +22,14 @@
         spacing: 10
         back_color: 200/255.0, 200/255.0, 200/255.0, 255/255.0
 
-        LocationsMapView:
-            id: locations_map
+        NewBoxLayout:
+            orientation: "vertical"
+
+            SettingsPanelView:
+                id: settings_panel
+
+            LocationsMapView:
+                id: locations_map
 
         NewFloatLayout:
 

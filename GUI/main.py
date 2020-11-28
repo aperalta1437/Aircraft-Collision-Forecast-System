@@ -7,6 +7,7 @@ from GUI.popups import show_message_popup
 from kivy.uix.modalview import ModalView
 from GUI.login_view import LoginView
 from GUI.settings_view import SettingsView
+from GUI.settings_panel_view import SettingsPanelView
 from GUI.data_manager import DataManager
 from threading import Thread
 from GUI.locations_mapview import LocationsMapView
@@ -20,6 +21,7 @@ class MainLayout(Widget):
     btn_toggle_airports = ObjectProperty(None)
     btn_toggle_airplanes = ObjectProperty(None)
     locations_map = ObjectProperty(None)
+    settings_panel = ObjectProperty(None)
 
     def toggle_airports(self):
         if self.locations_map.show_airports:
@@ -31,7 +33,6 @@ class MainLayout(Widget):
             else:
                 self.btn_toggle_airports.state = 'normal'
                 show_message_popup("Zoom level must be greater than 5.")
-
 
     def toggle_airplanes(self):
         if self.locations_map.show_airplanes:
@@ -59,7 +60,9 @@ class MainApp(MDApp):
     data_manager = None
 
     def build(self):
-        return MainLayout()
+        Main = MainLayout()
+        Main.settings_panel.load_settings()
+        return Main
 
     def on_start(self):
         # Config.set('graphics', 'width', '1050')
@@ -88,6 +91,7 @@ class MainApp(MDApp):
             # progress_bar.set_stage_name('Loading Airports...')
             self.data_manager = DataManager()
             #Clock.schedule_once(self.set_data_manager, 2)
+
             Thread(target=self.data_manager.load_airports).start()
 
 

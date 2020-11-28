@@ -1,0 +1,163 @@
+<ConfigSettingInput@TextInput>:
+    multiline: False
+    size_hint_y: None
+    height: 20
+    font_size: self.height - 12
+
+<ConfigSettingLabel@Label>:
+    color: 0,0,0,1
+    font_size: "10sp"
+    multiline: False
+
+<ConfigSettingsBoxLayout@BoxLayout>:
+    size_hint_y: .1
+    padding: [10, 15]
+    height: 20
+    orientation: "horizontal"
+
+<SettingsPanelView>:
+
+    predict_time : time
+    altitude_range : altitude_range
+
+    ap_bbox_min_lat : ap_bbox_min_lat
+    ap_bbox_max_lat : ap_bbox_max_lat
+    ap_bbox_min_long : ap_bbox_min_long
+    ap_bbox_max_long : ap_bbox_max_long
+
+    ac_bbox_min_lat : ac_bbox_min_lat
+    ac_bbox_max_lat : ac_bbox_max_lat
+    ac_bbox_min_long : ac_bbox_min_long
+    ac_bbox_max_long : ac_bbox_max_long
+
+    c_bbox_min_lat : c_bbox_min_lat
+    c_bbox_max_lat : c_bbox_max_lat
+    c_bbox_min_long : c_bbox_min_long
+    c_bbox_max_long : c_bbox_max_long
+
+    BoxLayout:
+        orientation: "vertical"
+
+        ConfigSettingsBoxLayout:
+            ConfigSettingLabel:
+                text: "Predict Time (seconds):"
+
+            ConfigSettingInput:
+                id: time
+                text: time.text
+
+            Widget:
+
+            Widget:
+
+            Widget:
+
+        ConfigSettingsBoxLayout:
+            ConfigSettingLabel:
+                text: "Barometric Altitude Range (meters):"
+
+            ConfigSettingInput:
+                id: altitude_range
+                text: altitude_range.text
+                multiline: False
+
+            Widget:
+
+            Widget:
+
+            Widget:
+
+        ConfigSettingsBoxLayout:
+            padding:(0,0)
+            size_hint_y: None
+
+            Widget:
+
+            ConfigSettingLabel:
+                text: "Min Latitude"
+
+            ConfigSettingLabel:
+                text: "Max Latitude"
+
+            ConfigSettingLabel:
+                text: "Min Longitude"
+
+            ConfigSettingLabel:
+                text: "Max Longitude"
+
+        ConfigSettingsBoxLayout:
+
+            ConfigSettingLabel:
+                text: "Airport Bounding Box (meters):"
+
+            ConfigSettingInput:
+                id : ap_bbox_min_lat
+                text: ap_bbox_min_lat.text
+
+            ConfigSettingInput:
+                id : ap_bbox_max_lat
+                text: ap_bbox_max_lat.text
+
+            ConfigSettingInput:
+                id : ap_bbox_min_long
+                text: ap_bbox_min_long.text
+
+            ConfigSettingInput:
+                id : ap_bbox_max_long
+                text: ap_bbox_max_long.text
+
+        ConfigSettingsBoxLayout:
+
+            ConfigSettingLabel:
+                text: "Aircraft Bounding Box (meters):"
+
+            ConfigSettingInput:
+                id : ac_bbox_min_lat
+                text: ac_bbox_min_lat.text
+                multiline:False
+
+            ConfigSettingInput:
+                id : ac_bbox_max_lat
+                text: ac_bbox_max_lat.text
+                multiline:False
+
+            ConfigSettingInput:
+                id : ac_bbox_min_long
+                text: ac_bbox_min_long.text
+                multiline:False
+
+            ConfigSettingInput:
+                id : ac_bbox_max_long
+                text: ac_bbox_max_long.text
+                multiline:False
+
+        ConfigSettingsBoxLayout:
+
+            ConfigSettingLabel:
+                text: "Collision Bounding Box (meters):"
+
+            ConfigSettingInput:
+                id : c_bbox_min_lat
+                text: c_bbox_min_lat.text
+                multiline:False
+
+            ConfigSettingInput:
+                id : c_bbox_max_lat
+                text: c_bbox_max_lat.text
+                multiline:False
+
+            ConfigSettingInput:
+                id : c_bbox_min_long
+                text: c_bbox_min_long.text
+                multiline:False
+
+            ConfigSettingInput:
+                id : c_bbox_max_long
+                text: c_bbox_max_long.text
+                multiline:False
+
+        Button:
+            size_hint: (.09, .03)
+            pos_hint: {"center_x":0.5, "center_y":0.75}
+            text: "Apply"
+            on_press: root.apply_btn()
