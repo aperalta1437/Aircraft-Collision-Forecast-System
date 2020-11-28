@@ -30,19 +30,23 @@ class AVLTree(object):
 
         # Update the balance factor and balance the tree
         balanceFactor = self.getBalance(root)
-        if balanceFactor > 1:
-            if key.data[self.index] < root.left.key.data[self.index]:
-                return self.rightRotate(root)
-            else:
-                root.left = self.leftRotate(root.left)
-                return self.rightRotate(root)
 
-        if balanceFactor < -1:
-            if key.data[self.index] > root.right.key.data[self.index]:
-                return self.leftRotate(root)
-            else:
-                root.right = self.rightRotate(root.right)
-                return self.leftRotate(root)
+        if balanceFactor > 1 and key.data[self.index] < root.left.key.data[self.index]:
+            return self.rightRotate(root)
+
+            # Case 2 - Right Right
+        if balanceFactor < -1 and key.data[self.index] > root.right.key.data[self.index]:
+            return self.leftRotate(root)
+
+            # Case 3 - Left Right
+        if balanceFactor > 1 and key.data[self.index] > root.left.key.data[self.index]:
+            root.left = self.leftRotate(root.left)
+            return self.rightRotate(root)
+
+            # Case 4 - Right Left
+        if balanceFactor < -1 and key.data[self.index] < root.right.key.data[self.index]:
+            root.right = self.rightRotate(root.right)
+            return self.leftRotate(root)
 
         return root
 
@@ -96,28 +100,24 @@ class AVLTree(object):
     # Function to perform left rotation
     def leftRotate(self, z):
         y = z.right
-
-        if y is not None:
-            T2 = y.left
-            y.left = z
-            z.right = T2
-            z.height = 1 + max(self.getHeight(z.left),
+        T2 = y.left
+        y.left = z
+        z.right = T2
+        z.height = 1 + max(self.getHeight(z.left),
                                self.getHeight(z.right))
-            y.height = 1 + max(self.getHeight(y.left),
+        y.height = 1 + max(self.getHeight(y.left),
                                self.getHeight(y.right))
         return y
 
     # Function to perform right rotation
     def rightRotate(self, z):
         y = z.left
-
-        if y is not None:
-            T3 = y.right
-            y.right = z
-            z.left = T3
-            z.height = 1 + max(self.getHeight(z.left),
+        T3 = y.right
+        y.right = z
+        z.left = T3
+        z.height = 1 + max(self.getHeight(z.left),
                                 self.getHeight(z.right))
-            y.height = 1 + max(self.getHeight(y.left),
+        y.height = 1 + max(self.getHeight(y.left),
                                 self.getHeight(y.right))
         return y
 
@@ -175,9 +175,38 @@ class AVLTree(object):
             self.printHelper(currPtr.left, indent, False)
             self.printHelper(currPtr.right, indent, True)
 
+    def get_node(self, root, look_up_val):
+        if not root:
+            return
+        elif look_up_val == root.key.data[self.index][:len(look_up_val)]:
+            return root
+        else:
+            if look_up_val < root.key.data[self.index][:len(look_up_val)]:
+                return self.get_node(root.left, look_up_val)
+            else:
+                return self.get_node(root.right, look_up_val)
 
-    def get_in_order_list(self):
-        pass
+    def get_in_order_list(self, root, text_input):
+        similar_node = self.get_node(root, text_input)
+
+        if similar_node is None:
+            return None
+
+        airports_list = self.get_first_ten(similar_node, text_input)
+        airports_list.sort(key=lambda data_ref: data_ref[self.index])
+
+        return airports_list[:10]
+
+    def get_first_ten(self, root, text_input):
+
+        if root is None or text_input != root.key.data[self.index][:len(text_input)]:
+            return []
+        else:
+            return [root.key.data] + self.get_first_ten(root.left, text_input) + self.get_first_ten(root.right, text_input)
+
+
+
+
 
 
 
