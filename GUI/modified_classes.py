@@ -1,6 +1,7 @@
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.floatlayout import FloatLayout
+from kivy.uix.button import Button
 from kivy.properties import ListProperty
 
 from kivy.factory import Factory
@@ -60,3 +61,10 @@ class NewFloatLayout(FloatLayout):
     back_color = ListProperty([1,1,1,1])
 
 Factory.register('modified_classes', module='NewFloatLayout')
+
+
+class DataButton(Button):
+
+    def __init__(self, data, **kwargs):
+        super(DataButton, self).__init__(**kwargs)
+        self.data = data
