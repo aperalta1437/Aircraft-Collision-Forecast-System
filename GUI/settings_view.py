@@ -4,6 +4,7 @@ from kivy.properties import ObjectProperty
 from GUI.modified_classes import NewFloatLayout
 from GUI.popups import show_question_popup
 
+
 class SettingsView(NewFloatLayout):
     btn_toggle_login_window = ObjectProperty(None)
     show_login_window = None
@@ -23,8 +24,6 @@ class SettingsView(NewFloatLayout):
 
         self.btn_toggle_login_window.text = 'ON' if self.show_login_window == '1' else 'OFF'
         self.btn_toggle_login_window.state = 'down' if self.show_login_window == '1' else 'normal'
-        # TODO Fix On/OFF button
-
 
     def turn_login_window(self):
 
@@ -38,7 +37,9 @@ class SettingsView(NewFloatLayout):
             self.btn_toggle_login_window.text = 'ON'
 
         self.setting_cursor.execute(query)
-
+        query = f"SELECT STATE FROM SETTINGS WHERE NAME = 'SHOW LOGIN WINDOW';"
+        self.setting_cursor.execute(query)
+        self.show_login_window = (self.setting_cursor.fetchall())[0][0]
 
     def save_settings(self):
         if not self.saved:

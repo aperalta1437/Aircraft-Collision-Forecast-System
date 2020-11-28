@@ -47,6 +47,17 @@ class AircraftData:
         states = self._get_states_from_api(bbox)
         return states
 
+
+    def get_states(self):
+        """Used for getting states from an airport or other static location
+        :param coordinates: represented in (lat, long) tuple
+        :return states object: contains each aircraft represent as a state, see api docs for more info
+        """
+        states = self._get_states_from_api()
+        return states
+
+
+
     def get_states_from_plane(self, ICAO24):  # plane represented in with ICAO24 address, should be a 6-character hex representation
         """Gets states from a moving object such as a plane
         :param ICAO24: string
@@ -75,8 +86,11 @@ class AircraftData:
             # try:
             if bbox:  # only a bbox or icao24, not both
                 states = self.api.get_states(bbox=bbox)
-            else:
+            elif icao24:
                 states = self.api.get_states(icao24=icao24)
+            else:
+                states = self.api.get_states()
+
             if not states:
                 # except requests.exceptions.ReadTimeout:
                 print("Waiting for OpenSky Network API")

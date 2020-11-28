@@ -5,18 +5,35 @@ from kivy.app import App
 from GUI.popups import show_loading_popup
 from opensky_api import OpenSkyApi
 import sqlite3
+from threading import Thread
+from aircraftdata import AircraftData
+import DATA.database_manager as db_manager
 
 
 class DataManager:
-    def __init__(self):
+    def __init__(self, airport_id_index, airplane_id_index):
         self.app = App.get_running_app()
+
+        self.airport_id_index = airport_id_index
+        self.airplane_id_index = airplane_id_index
+
         self.progress_bar = show_loading_popup()
 
-    def load_airports(self):
-        self.airports_tree_manager = AVLTree(2)
+        self.airports_tree_manager = AVLTree(self.airport_id_index)
         self.airports_tree = None
 
-        airports_connection = sqlite3.connect("DATA\\global_airports.db")
+        # Set the airport id's index on the mapview object to increment performance.
+        self.app.main_layout.locations_map.airport_id_index = airport_id_index
+        # Set the airplane id's index on the mapview object to increment performance.
+        self.app.main_layout.locations_map.airplane_id_index = airplane_id_index
+
+        self.api = AircraftData().get_instance()
+        self.airplanes_tree_manager = AVLTree(airplane_id_index)
+        self.airplanes_tree = None
+
+    def load_airports(self):
+
+        airports_connection = sqlite3.connect(r"DATA\global_airports.db")
         airports_cursor = airports_connection.cursor()
 
         airports_cursor.execute("SELECT * FROM AIRPORTS")
@@ -28,28 +45,54 @@ class DataManager:
 
         for index in range(0, len(airports)):
             self.progress_bar.increment()
-            if airports[index][self.airports_tree_manager.index] == r'N/A':
+
+            if airports[index][self.airport_id_index] == r'N/A' or \
+                    airports[index][15] == 0.0 or airports[index][16] == 0.0:
                 continue
             self.airports_tree = self.airports_tree_manager.insert_node(self.airports_tree,
                                                                         AirportMarker(data=airports[index]))
 
-    def load_airplanes(self):
-        self.api = OpenSkyApi()
-        self.airplanes_tree_manager = AVLTree(4)
-        self.airplanes_tree = None
+        airports_connection.close()
 
-        self.progress_bar.set_stage_name('Requesting airplanes...')
+        Thread(target=self.load_airplanes).start()
+
+    def load_airplanes(self):
+
+        db_manager.clean_table(r'DATA\AIRCRAFT_COLLISION_FORECAST_SYSTEM.db', 'AIRPLANES')
 
         airplanes = self.api.get_states().states
 
-        self.progress_bar.set_stage_name('Loading airplanes...')
+        db_manager.open_db_connection(r'DATA\AIRCRAFT_COLLISION_FORECAST_SYSTEM.db')
 
         for airplane in airplanes:
-            self.progress_bar.increment()
-            curr_airplane = (airplane.baro_altitude, airplane.callsign, airplane.geo_altitude, airplane.heading,
-                             airplane.icao24, airplane.last_contact, airplane.latitude, airplane.longitude,
+            curr_airplane = (airplane.icao24, airplane.baro_altitude, airplane.callsign, airplane.geo_altitude,
+                             airplane.heading, airplane.last_contact, airplane.latitude, airplane.longitude,
                              airplane.on_ground, airplane.origin_country, airplane.position_source, airplane.sensors,
                              airplane.spi, airplane.squawk, airplane.time_position, airplane.velocity,
                              airplane.vertical_rate)
+            if curr_airplane[0] is None or curr_airplane[6] is None or curr_airplane[7] is None:
+                continue
+
+            db_manager.add_row(r'DATA\AIRCRAFT_COLLISION_FORECAST_SYSTEM.db', 'AIRPLANES', keep_open=True,
+                               ICAO24=f"'{curr_airplane[0]}'",
+                               BARO_ALTITUDE=(curr_airplane[1] if curr_airplane[1] is not None else 'NULL'),
+                               CALLSIGN=(f"'{curr_airplane[2]}'" if curr_airplane[2] is not None else 'NULL'),
+                               GEO_ALTITUDE=(curr_airplane[3] if curr_airplane[3] is not None else 'NULL'),
+                               HEADING=(curr_airplane[4] if curr_airplane[4] is not None else 'NULL'),
+                               LAST_CONTACT=(curr_airplane[5] if curr_airplane[5] is not None else 'NULL'),
+                               LATITUDE=(curr_airplane[6] if curr_airplane[6] is not None else 'NULL'),
+                               LONGITUDE=(curr_airplane[7] if curr_airplane[7] is not None else 'NULL'),
+                               ON_GROUND=(0 if not curr_airplane[8] else 1),
+                               ORIGIN_COUNTRY=(f"'{curr_airplane[9]}'" if curr_airplane[9] is not None else 'NULL'),
+                               POSITION_SOURCE=(curr_airplane[10] if curr_airplane[10] is not None else 'NULL'),
+                               SENSORS=(f"'{curr_airplane[11]}'" if curr_airplane[11] is not None else 'NULL'),
+                               SPI=(0 if not curr_airplane[12] else 1),
+                               SQUAWK=(f"'{curr_airplane[13]}'" if curr_airplane[13] is not None else 'NULL'),
+                               TIME_POSITION=(curr_airplane[14] if curr_airplane[14] is not None else 'NULL'),
+                               VELOCITY=(curr_airplane[15] if curr_airplane[15] is not None else 'NULL'),
+                               VERTICAL_RATE=(curr_airplane[16] if curr_airplane[16] is not None else 'NULL'))
+
             self.airplanes_tree = self.airplanes_tree_manager.insert_node(self.airplanes_tree,
                                                                           AirplaneMarker(data=curr_airplane))
+
+        db_manager.close_db_connection()

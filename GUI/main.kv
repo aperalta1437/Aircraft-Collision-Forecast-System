@@ -10,7 +10,8 @@
     btn_toggle_airports: btn_toggle_airports
     btn_toggle_airplanes: btn_toggle_airplanes
     locations_map: locations_map
-    airports_dropdown: airports_dropdown.__self__
+    airports_search_bar: airports_search_bar
+    airplanes_search_bar: airplanes_search_bar
 
     NewBoxLayout:
         size: root.width, root.height
@@ -45,45 +46,53 @@
             Label:
                 color: 0,0,0,1
                 font_size: "20sp"
+                pos_hint: {"x": 0.02, "y": 0.94}
+                size_hint: 0.3, 0.05
+                text: "IATA Code:"
+
+            TextInput:
+                id: airports_search_bar
+                height: '48dp'
+                pos_hint: {"x": 0.33, "y": 0.94}
+                size_hint: 0.65, 0.05
+                on_text: root.get_airport_suggestions()
+
+            Label:
+                color: 0,0,0,1
+                font_size: "20sp"
+                pos_hint: {"x": 0.05, "y": 0.87}
+                size_hint: 0.3, 0.05
+                text: "ICAO 24:"
+
+            TextInput:
+                id: airplanes_search_bar
+                height: '48dp'
+                pos_hint: {"x": 0.33, "y": 0.87}
+                size_hint: 0.65, 0.05
+                on_text: root.get_airplane_suggestions()
+
+            Label:
+                color: 0,0,0,1
+                font_size: "20sp"
                 size_hint: 0.37, 0.05
                 pos_hint: {"x": 0.05, "y": 0.18}
                 text: "{:<20s}".format("Zoom level: " + str(locations_map.zoom))
 
             Button:
-                id: btn_dropdown
-                on_parent: airports_dropdown.dismiss()
-                on_text: airports_dropdown.open(btn_dropdown)
-                height: '48dp'
-                pos_hint: {"x": 0.33, "y": 0.94}
-                size_hint: 0.65, 0.05
+                text: "+"
+                font_size: "32sp"
+                bold: True
+                size_hint: 0.15, 0.05
+                pos_hint: {"x": 0.66, "y": 0.17}
+                on_release: locations_map.increment_zoom()
 
-            DropDown:
-                id: airports_dropdown
-                on_select: btn_dropdown.text = '{}'.format(args[1])
-
-                Button:
-                    text: 'First Item'
-                    size_hint_y: None
-                    height: '48dp'
-                    on_release: airports_dropdown.select('First Item')
-
-                Label:
-                    text: 'Second Item'
-                    size_hint_y: None
-                    height: '48dp'
-
-                Button:
-                    text: 'Third Item'
-                    size_hint_y: None
-                    height: '48dp'
-                    on_release: airports_dropdown.select('Third Item')
-
-            Label:
-                color: 0,0,0,1
-                font_size: "20sp"
-                pos_hint: {"x": 0.02, "y": 0.94}
-                size_hint: 0.3, 0.05
-                text: "IATA Code:"
+            Button:
+                text: "-"
+                font_size: "32sp"
+                bold: True
+                size_hint: 0.15, 0.05
+                pos_hint: {"x": 0.83, "y": 0.17}
+                on_release: locations_map.decrement_zoom()
 
             ToggleButton:
                 id: btn_toggle_airports
