@@ -6,7 +6,7 @@ This application requires **Python 3.7**
 
 You can install all the dependencies for **MacOS** as follows:
 ```
-pip3 install -r requirements.txt 
+pip3 install -r macOS.txt 
 ```
 
 You can install all the dependencies for **Windows** as follows:
