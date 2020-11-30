@@ -8,7 +8,7 @@ import sqlite3
 from threading import Thread
 from aircraftdata import AircraftData
 import DATA.database_manager as db_manager
-
+import os.path
 
 class DataManager:
     def __init__(self, airport_id_index, airplane_id_index):
@@ -32,8 +32,9 @@ class DataManager:
         self.airplanes_tree = None
 
     def load_airports(self):
-
-        airports_connection = sqlite3.connect(r"DATA\global_airports.db")
+        BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+        db_path = os.path.join(BASE_DIR, "..", "DATA", "global_airports.db")
+        airports_connection = sqlite3.connect(db_path)
         airports_cursor = airports_connection.cursor()
 
         airports_cursor.execute("SELECT * FROM AIRPORTS")
@@ -57,12 +58,14 @@ class DataManager:
         Thread(target=self.load_airplanes).start()
 
     def load_airplanes(self):
+        BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+        db_path = os.path.join(BASE_DIR, "..", "DATA", "AIRCRAFT_COLLISION_FORECAST_SYSTEM.db")
 
-        db_manager.clean_table(r'DATA\AIRCRAFT_COLLISION_FORECAST_SYSTEM.db', 'AIRPLANES')
+        db_manager.clean_table(db_path, 'AIRPLANES')
 
         airplanes = self.api.get_states().states
 
-        db_manager.open_db_connection(r'DATA\AIRCRAFT_COLLISION_FORECAST_SYSTEM.db')
+        db_manager.open_db_connection(db_path)
 
         for airplane in airplanes:
             curr_airplane = (airplane.icao24, airplane.baro_altitude, airplane.callsign, airplane.geo_altitude,
@@ -73,7 +76,7 @@ class DataManager:
             if curr_airplane[0] is None or curr_airplane[6] is None or curr_airplane[7] is None:
                 continue
 
-            db_manager.add_row(r'DATA\AIRCRAFT_COLLISION_FORECAST_SYSTEM.db', 'AIRPLANES', keep_open=True,
+            db_manager.add_row(db_path, 'AIRPLANES', keep_open=True,
                                ICAO24=f"'{curr_airplane[0]}'",
                                BARO_ALTITUDE=(curr_airplane[1] if curr_airplane[1] is not None else 'NULL'),
                                CALLSIGN=(f"'{curr_airplane[2]}'" if curr_airplane[2] is not None else 'NULL'),

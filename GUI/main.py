@@ -13,6 +13,7 @@ from GUI.settings_view import SettingsView
 from GUI.settings_panel_view import SettingsPanelView
 from GUI.data_manager import DataManager
 from threading import Thread
+import os.path
 
 # Program needs this to import LocationsMapView class (IGNORE INTERPRETER WARNING).
 from GUI.locations_mapview import LocationsMapView
@@ -165,7 +166,10 @@ class MainLayout(Widget):
         Cleans the airplanes database information and closes the application.
         :return: None
         """
-        db_connection = sqlite3.connect(r'DATA\AIRCRAFT_COLLISION_FORECAST_SYSTEM.db')
+        BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+        db_path = os.path.join(BASE_DIR, "..", "DATA", "AIRCRAFT_COLLISION_FORECAST_SYSTEM.db")
+        db_connection = sqlite3.connect(db_path)
         db_cursor = db_connection.cursor()
         query = f"DELETE FROM AIRPLANES"
         db_cursor.execute(query)
@@ -199,10 +203,15 @@ class MainApp(MDApp):
         # Config.write()
         Window.clearcolor = (0, 0, 0, 1)
         Window.size = (1200, 800)
-        self.airports_connection = sqlite3.connect(r"DATA\global_airports.db")
+        BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+        db_path = os.path.join(BASE_DIR, "..", "DATA", "global_airports.db")
+        self.airports_connection = sqlite3.connect(db_path)
         self.airports_cursor = self.airports_connection.cursor()
 
-        settings_connection = sqlite3.connect(r'DATA\AIRCRAFT_COLLISION_FORECAST_SYSTEM.db')
+        db_path = os.path.join(BASE_DIR, "..", "DATA", "AIRCRAFT_COLLISION_FORECAST_SYSTEM.db")
+        settings_connection = sqlite3.connect(db_path)
+
         settings_cursor = settings_connection.cursor()
         query = f"SELECT STATE FROM SETTINGS WHERE NAME = 'SHOW LOGIN WINDOW'"
         settings_cursor.execute(query)
