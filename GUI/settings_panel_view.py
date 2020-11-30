@@ -3,8 +3,10 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.widget import Widget
 from config import Config
 from kivy.app import App
+from GUI.modified_classes import NewGridLayout
+from GUI.modified_classes import NewBoxLayout
 
-class SettingsPanelView(BoxLayout):
+class SettingsPanelView(NewBoxLayout):
     config = Config.get_instance()
 
     predict_time = ObjectProperty(None)
@@ -63,7 +65,9 @@ class SettingsPanelView(BoxLayout):
 
 class Settings_Panel_View(App):
     def build(self):
-        return SettingsPanelView()
+        test = SettingsPanelView()
+        test.load_settings()
+        return test
 
 if __name__ == "__main__":
     Settings_Panel_View().run()

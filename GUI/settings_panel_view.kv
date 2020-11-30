@@ -1,19 +1,14 @@
 <ConfigSettingInput@TextInput>:
+    size_hint: 0.5,0.5
+    pos_hint: {"center_y": 0.5}
+    font_size: "8dp"
     multiline: False
-    size_hint_y: None
-    height: 20
-    font_size: self.height - 12
 
 <ConfigSettingLabel@Label>:
     color: 0,0,0,1
-    font_size: "10sp"
-    multiline: False
-
-<ConfigSettingsBoxLayout@BoxLayout>:
-    size_hint_y: .1
-    padding: [10, 15]
-    height: 20
-    orientation: "horizontal"
+    pos_hint: {"top": 1}
+    font_size: "8dp"
+    multiline: True
 
 <SettingsPanelView>:
 
@@ -37,8 +32,14 @@
 
     BoxLayout:
         orientation: "vertical"
+        padding: [5, 5]
 
-        ConfigSettingsBoxLayout:
+        NewGridLayout:
+            cols:5
+            cols_minimum: {0:100, 1:30, 2:30, 3:30, 4:30, 5:30}
+            padding: [10, 10]
+            spacing: 5
+
             ConfigSettingLabel:
                 text: "Predict Time (seconds):"
 
@@ -52,7 +53,7 @@
 
             Widget:
 
-        ConfigSettingsBoxLayout:
+
             ConfigSettingLabel:
                 text: "Barometric Altitude Range (meters):"
 
@@ -67,9 +68,7 @@
 
             Widget:
 
-        ConfigSettingsBoxLayout:
-            padding:(0,0)
-            size_hint_y: None
+
 
             Widget:
 
@@ -85,7 +84,7 @@
             ConfigSettingLabel:
                 text: "Max Longitude"
 
-        ConfigSettingsBoxLayout:
+
 
             ConfigSettingLabel:
                 text: "Airport Bounding Box (meters):"
@@ -106,7 +105,7 @@
                 id : ap_bbox_max_long
                 text: ap_bbox_max_long.text
 
-        ConfigSettingsBoxLayout:
+
 
             ConfigSettingLabel:
                 text: "Aircraft Bounding Box (meters):"
@@ -131,7 +130,6 @@
                 text: ac_bbox_max_long.text
                 multiline:False
 
-        ConfigSettingsBoxLayout:
 
             ConfigSettingLabel:
                 text: "Collision Bounding Box (meters):"
@@ -157,7 +155,7 @@
                 multiline:False
 
         Button:
-            size_hint: (.09, .03)
-            pos_hint: {"center_x":0.5, "center_y":0.75}
+            size_hint: (0.2, 0.2)
+            pos_hint: {"center_x":0.5}
             text: "Apply"
             on_press: root.apply_btn()

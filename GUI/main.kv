@@ -13,6 +13,7 @@
     locations_map: locations_map
     airports_search_bar: airports_search_bar
     airplanes_search_bar: airplanes_search_bar
+    settings_panel: settings_panel
 
     NewBoxLayout:
         size: root.width, root.height
@@ -21,14 +22,8 @@
         spacing: 10
         back_color: 200/255.0, 200/255.0, 200/255.0, 255/255.0
 
-        NewBoxLayout:
-            orientation: "vertical"
-
-            SettingsPanelView:
-                id: settings_panel
-
-            LocationsMapView:
-                id: locations_map
+        LocationsMapView:
+            id: locations_map
 
         NewFloatLayout:
 
@@ -77,6 +72,18 @@
                 pos_hint: {"x": 0.33, "y": 0.87}
                 size_hint: 0.65, 0.05
                 on_text: root.get_airplane_suggestions()
+
+            Label:
+                color: 0,0,0,1
+                font_size: "20sp"
+                pos_hint: {"x": 0.35, "y": 0.6}
+                size_hint: 0.3, 0.05
+                text: "Collision Forecast Settings"
+
+            SettingsPanelView:
+                id: settings_panel
+                size_hint: 0.9, 0.3
+                pos_hint: {"x": 0.05, "y": 0.3}
 
             Label:
                 color: 0,0,0,1
