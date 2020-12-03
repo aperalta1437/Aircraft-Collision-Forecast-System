@@ -219,7 +219,7 @@ class MainApp(MDApp):
         settings_connection.close()
 
         if result[0][0] == '1':
-            login_window = ModalView(size_hint=(None, None), size=(500, 400), auto_dismiss=False)
+            login_window = ModalView(size_hint=(0.5, 0.5), auto_dismiss=False)
             login_window.add_widget(LoginView(login_window))
             login_window.open()
         else:
