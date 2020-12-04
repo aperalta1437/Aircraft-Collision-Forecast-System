@@ -51,15 +51,15 @@ class AVLTree(object):
         return root
 
     # Function to delete a node
-    def delete_node(self, root, key):
+    def delete_node(self, root, look_up_val):
 
         # Find the node to be deleted and remove it
         if not root:
             return root
-        elif key < root.key:
-            root.left = self.delete_node(root.left, key)
-        elif key > root.key:
-            root.right = self.delete_node(root.right, key)
+        elif look_up_val < root.key.data[self.index]:
+            root.left = self.delete_node(root.left, look_up_val)
+        elif look_up_val > root.key.data[self.index]:
+            root.right = self.delete_node(root.right, look_up_val)
         else:
             if root.left is None:
                 temp = root.right
@@ -70,9 +70,11 @@ class AVLTree(object):
                 root = None
                 return temp
             temp = self.getMinValueNode(root.right)
-            root.key = temp.key
+            root.key.data = temp.key.data
             root.right = self.delete_node(root.right,
-                                          temp.key)
+                                          temp.key.data[self.index])
+
+        #print(root.key.data[self.index])
         if root is None:
             return root
 
@@ -81,20 +83,38 @@ class AVLTree(object):
                               self.getHeight(root.right))
 
         balanceFactor = self.getBalance(root)
+        # #FIXME
+        # # Balance the tree
+        # if balanceFactor > 1:
+        #     if self.getBalance(root.left) >= 0:
+        #         return self.rightRotate(root)
+        #     else:
+        #         root.left = self.leftRotate(root.left)
+        #         return self.rightRotate(root)
+        # if balanceFactor < -1:
+        #     if self.getBalance(root.right) <= 0:
+        #         return self.leftRotate(root)
+        #     else:
+        #         root.right = self.rightRotate(root.right)
+        #         return self.leftRotate(root)
 
-        # Balance the tree
-        if balanceFactor > 1:
-            if self.getBalance(root.left) >= 0:
-                return self.rightRotate(root)
-            else:
-                root.left = self.leftRotate(root.left)
-                return self.rightRotate(root)
-        if balanceFactor < -1:
-            if self.getBalance(root.right) <= 0:
-                return self.leftRotate(root)
-            else:
-                root.right = self.rightRotate(root.right)
-                return self.leftRotate(root)
+        if balanceFactor > 1 and look_up_val < root.left.key.data[self.index]:
+            return self.rightRotate(root)
+
+            # Case 2 - Right Right
+        if balanceFactor < -1 and look_up_val > root.right.key.data[self.index]:
+            return self.leftRotate(root)
+
+            # Case 3 - Left Right
+        if balanceFactor > 1 and look_up_val > root.left.key.data[self.index]:
+            root.left = self.leftRotate(root.left)
+            return self.rightRotate(root)
+
+            # Case 4 - Right Left
+        if balanceFactor < -1 and look_up_val < root.right.key.data[self.index]:
+            root.right = self.rightRotate(root.right)
+            return self.leftRotate(root)
+
         return root
 
     # Function to perform left rotation
@@ -176,6 +196,9 @@ class AVLTree(object):
             self.printHelper(currPtr.right, indent, True)
 
     def get_node(self, root, look_up_val):
+        if root is not None:
+            print(root.key)
+        #print(root.key)
         if not root:
             return
         elif look_up_val == root.key.data[self.index][:len(look_up_val)]:
@@ -204,6 +227,14 @@ class AVLTree(object):
         else:
             return [root.key.data] + self.get_first_ten(root.left, text_input) + self.get_first_ten(root.right, text_input)
 
+    def update_node(self, root, data):
+        node_to_update = self.get_node(root, data[self.index])
+
+        if node_to_update:
+            node_to_update.key.data = data
+            return True
+        else:
+            return False
 
 
 

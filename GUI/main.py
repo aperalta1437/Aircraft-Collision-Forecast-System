@@ -1,3 +1,7 @@
+from kivy.config import Config
+import os
+from os import listdir
+from os.path import isfile, join
 from kivy.core.window import Window
 from kivymd.app import MDApp
 import sqlite3
@@ -12,6 +16,10 @@ from GUI.login_view import LoginView
 from GUI.settings_view import SettingsView
 from GUI.data_manager import DataManager
 from threading import Thread
+from DATA.database_manager import clean_table
+
+Config.set('kivy', 'exit_on_escape', '0')
+
 
 # Program needs this to import LocationsMapView class (IGNORE INTERPRETER WARNING).
 from GUI.locations_mapview import LocationsMapView
@@ -101,6 +109,7 @@ class MainLayout(Widget):
         print(btn_suggestion.data)
         self.locations_map.center_on(btn_suggestion.data[15], btn_suggestion.data[16])
         self.airports_search_bar.focus = False
+        self.locations_map.focus_on_airport = True
         self.locations_map.add_airport(btn_suggestion.data)
 
     def get_airplane_suggestions(self):
@@ -144,8 +153,8 @@ class MainLayout(Widget):
         self.locations_map.zoom = 8
         self.locations_map.center_on(btn_suggestion.data[6], btn_suggestion.data[7])
         self.airports_search_bar.focus = False
+        self.locations_map.focus_on_airplane = True
         self.locations_map.add_airplane(btn_suggestion.data)
-
 
     @staticmethod
     def open_settings_window():
@@ -157,19 +166,21 @@ class MainLayout(Widget):
         settings_window.add_widget(SettingsView(settings_window))
         settings_window.open()
 
-    @staticmethod
-    def close_app():
+    def close_app(self):
         """
-        Cleans the airplanes database information and closes the application.
+        Cleans the airplanes database information, deletes the rotated airplanes images and closes the application.
         :return: None
         """
-        db_connection = sqlite3.connect(r'DATA\AIRCRAFT_COLLISION_FORECAST_SYSTEM.db')
-        db_cursor = db_connection.cursor()
-        query = f"DELETE FROM AIRPLANES"
-        db_cursor.execute(query)
-        db_connection.close()
 
-        MDApp.get_running_app().stop()
+        clean_table(r'DATA\AIRCRAFT_COLLISION_FORECAST_SYSTEM.db', 'AIRPLANES')
+
+        img_path = 'GUI\\IMAGE\\'
+        img_file_names = [file_name for file_name in listdir(img_path) if isfile(join(img_path, file_name))]
+        for file_name in img_file_names:
+            if file_name not in ('map_marker.png', 'airplane_marker.png'):
+                os.remove(img_path + file_name)
+        print('Closing app')
+        self.app.root_window.close()
 
 
 class MainApp(MDApp):
@@ -213,6 +224,9 @@ class MainApp(MDApp):
         else:
             self.data_manager = DataManager(airport_id_index=2, airplane_id_index=0)
             Thread(target=self.data_manager.load_airports).start()
+
+    def on_stop(self):
+        self.main_layout.close_app()
 
 
 if __name__ == "__main__":

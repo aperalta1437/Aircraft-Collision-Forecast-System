@@ -6,3 +6,5 @@ git+git://github.com/openskynetwork/opensky-api#egg=opensky-api&subdirectory=pyt
 
 
 kivymd~=0.104.1
+Pillow~=8.0.1
+geopy~=2.0.0
