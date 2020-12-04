@@ -22,5 +22,5 @@ Kseniia Gromova
 ## License
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
 
-##Acknowledgement
+##Acknowledgements
 This application uses the information from The OpenSky Network, http://www.opensky-network.org, and The Global Airport Database, https://www.partow.net/miscellaneous/airportdatabase/
