@@ -47,7 +47,7 @@ class Config:
     def set_airplane_bbox_settings(self, bbox):
         self._airplane_bbox_settings = bbox
 
-    def set_collision_bbox_settigns(self, bbox):
+    def set_collision_bbox_settings(self, bbox):
         self._collision_bbox_settings = bbox
 
     def set_altitude_range(self, range):

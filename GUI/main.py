@@ -14,6 +14,7 @@ from kivy.uix.button import Button
 from GUI.modified_classes import DataButton
 from GUI.login_view import LoginView
 from GUI.settings_view import SettingsView
+from GUI.settings_panel_view import SettingsPanelView
 from GUI.data_manager import DataManager
 from threading import Thread
 import os.path
@@ -32,6 +33,7 @@ class MainLayout(Widget):
     locations_map = ObjectProperty(None)                # Hold a reference to the map after the graphics are rendered.
     airports_search_bar = ObjectProperty(None)          # Hold a reference to the airports search bar after the graphics are rendered.
     airplanes_search_bar = ObjectProperty(None)         # Hold a reference to the airplanes search bar after the graphics are rendered.
+    settings_panel = ObjectProperty(None)               # Hold a reference to the settings panel after the graphics are rendered.
 
     def __init__(self):
         super(MainLayout, self).__init__()
@@ -195,6 +197,7 @@ class MainApp(MDApp):
         :return: The application's main layout.
         """
         self.main_layout = MainLayout()
+        self.main_layout.settings_panel.load_settings()
         return self.main_layout
 
     def on_start(self):
@@ -224,7 +227,7 @@ class MainApp(MDApp):
         settings_connection.close()
 
         if result[0][0] == '1':
-            login_window = ModalView(size_hint=(None, None), size=(500, 400), auto_dismiss=False)
+            login_window = ModalView(size_hint=(0.5, 0.5), auto_dismiss=False)
             login_window.add_widget(LoginView(login_window))
             login_window.open()
         else:
