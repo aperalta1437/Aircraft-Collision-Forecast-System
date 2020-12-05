@@ -3,11 +3,12 @@ import sys
 
 class AirportMarker(MapMarkerPopup):
 
-    def __init__(self, data):
+    def __init__(self, data, **kwargs):
         super(AirportMarker, self).__init__()
         self.data = data
         self.lat = data[15]
         self.lon = data[16]
+
 
     def set_source(self, source):
         self.source = source
