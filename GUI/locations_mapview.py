@@ -2,6 +2,7 @@ from kivy_garden.mapview import MapView
 from kivy.clock import Clock
 from kivy.app import App
 import DATA.database_manager as db_manager
+import os.path
 from PIL import Image
 
 
@@ -91,7 +92,10 @@ class LocationsMapView(MapView):
         query = "SELECT * FROM AIRPLANES WHERE LATITUDE > {min_lat:f} AND LATITUDE < {max_lat:f} " \
                 "AND LONGITUDE > {min_lon:f} AND LONGITUDE < {max_lon:f}".format(
                     min_lat=min_lat, max_lat=max_lat, min_lon=min_lon, max_lon=max_lon)
-        airplanes = db_manager.execute_query(query, db_file_name=r'DATA\AIRCRAFT_COLLISION_FORECAST_SYSTEM.db')
+
+        BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+        db_path = os.path.join(BASE_DIR, "..", "DATA", "AIRCRAFT_COLLISION_FORECAST_SYSTEM.db")
+        airplanes = db_manager.execute_query(query, db_file_name=db_path)
 
         self.visible_airplanes_ids = [airplane_in_fov[self.airplane_id_index] for airplane_in_fov in airplanes]
 
@@ -125,7 +129,9 @@ class LocationsMapView(MapView):
         marker = self.app.data_manager.airports_tree_manager.get_node(self.app.data_manager.airports_tree, airport[
             self.airport_id_index]).key  # Creates the marker.
 
-        marker.set_source(r'IMAGE\map_marker.png')
+        BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+        marker_path = os.path.join(BASE_DIR, "IMAGE", "map_marker.png")
+        marker.set_source(marker_path)
         self.add_widget(marker)  # Add the marker to the map.
 
         self.on_map_airports_ids[airport[0]] = marker  # Keep track of all airports on the map.
