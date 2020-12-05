@@ -16,6 +16,7 @@ from GUI.login_view import LoginView
 from GUI.settings_view import SettingsView
 from GUI.data_manager import DataManager
 from threading import Thread
+import os.path
 from DATA.database_manager import clean_table
 
 Config.set('kivy', 'exit_on_escape', '0')
@@ -217,10 +218,15 @@ class MainApp(MDApp):
         # Config.write()
         Window.clearcolor = (0, 0, 0, 1)
         Window.size = (1200, 800)
-        self.airports_connection = sqlite3.connect(r"DATA\global_airports.db")
+        BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+        db_path = os.path.join(BASE_DIR, "..", "DATA", "global_airports.db")
+        self.airports_connection = sqlite3.connect(db_path)
         self.airports_cursor = self.airports_connection.cursor()
 
-        settings_connection = sqlite3.connect(r'DATA\AIRCRAFT_COLLISION_FORECAST_SYSTEM.db')
+        db_path = os.path.join(BASE_DIR, "..", "DATA", "AIRCRAFT_COLLISION_FORECAST_SYSTEM.db")
+        settings_connection = sqlite3.connect(db_path)
+
         settings_cursor = settings_connection.cursor()
         query = f"SELECT STATE FROM SETTINGS WHERE NAME = 'SHOW LOGIN WINDOW'"
         settings_cursor.execute(query)

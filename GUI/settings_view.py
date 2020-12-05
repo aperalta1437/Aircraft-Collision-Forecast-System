@@ -3,6 +3,7 @@ import sqlite3
 from kivy.properties import ObjectProperty
 from GUI.modified_classes import NewFloatLayout
 from GUI.popups import show_question_popup
+import os.path
 
 
 class SettingsView(NewFloatLayout):
@@ -13,7 +14,11 @@ class SettingsView(NewFloatLayout):
         self.settings_window = window
         self.app = App.get_running_app()
         self.saved = True
-        self.setting_connection = sqlite3.connect('DATA\\AIRCRAFT_COLLISION_FORECAST_SYSTEM.db')
+
+        BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+        db_path = os.path.join(BASE_DIR, "..", "DATA", "AIRCRAFT_COLLISION_FORECAST_SYSTEM.db")
+        self.setting_connection = sqlite3.connect(db_path)
+
         self.setting_cursor = self.setting_connection.cursor()
 
         super(SettingsView, self).__init__()
