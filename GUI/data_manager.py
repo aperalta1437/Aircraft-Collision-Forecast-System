@@ -104,7 +104,7 @@ class DataManager:
 
         print('Airplanes Done')
 
-        time.sleep(30)
+        time.sleep(15)
         self.update_airplanes()
 
     def update_airplanes(self):
@@ -190,5 +190,6 @@ class DataManager:
 
         print('Airplanes Done')
 
-        time.sleep(30)
-        Thread(target=self.update_airplanes).start()
+        self.app.main_layout.locations_map.refresh_airplanes_in_fov(updated=True)
+        time.sleep(15)
+        Thread(target=self.update_airplanes, daemon=True).start()

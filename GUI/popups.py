@@ -9,16 +9,20 @@ from kivy.properties import ObjectProperty
 class MessagePopup(NewFloatLayout):
     # message = None
     # popup_window = None
-
+    btn_close_message_popup = ObjectProperty(None)
+    lbl_message_popup = ObjectProperty(None)
     def __init__(self, popup_window, message=None):
         self.message = message
         self.popup_window = popup_window
         super().__init__()
 
 
-def show_message_popup(message):
-    popup_window = Popup(title="INFO", size_hint=(None, None), size=(400, 200))
+def show_message_popup(message, width_hint=0.33, height_hint=0.3):
+    popup_window = Popup(title="INFO", size_hint=(width_hint, height_hint))
     popup_content = MessagePopup(popup_window, message)
+    popup_content.btn_close_message_popup.size_hint_x = width_hint
+    popup_content.btn_close_message_popup.size_hint_y = None
+    popup_content.btn_close_message_popup.height = 50
     popup_window.content = popup_content
     popup_window.open()
 

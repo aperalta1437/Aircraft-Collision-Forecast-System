@@ -3,6 +3,7 @@ from kivy.clock import Clock
 from kivy.app import App
 import DATA.database_manager as db_manager
 from PIL import Image
+from GUI.airplane_marker import AirplaneMarker
 
 
 class LocationsMapView(MapView):
@@ -35,7 +36,7 @@ class LocationsMapView(MapView):
             pass
         self.getting_locations_timer = Clock.schedule_once(self.get_locations_in_fov, 1)
 
-    def get_locations_in_fov(self, *args):
+    def get_locations_in_fov(self, *args, airport_focus=False, airplane_focus=False):
         if self.zoom <= 5:
             self.focus_on_airport = False
             self.focus_on_airplane = False
@@ -56,8 +57,7 @@ class LocationsMapView(MapView):
 
         self.visible_airports_ids = [airport_in_fov[0] for airport_in_fov in airports]
 
-        if self.show_airports and self.zoom > 5:
-
+        if (self.show_airports or airport_focus) and (self.zoom > 5):
             print(len(airports))
             print(self.get_bbox())
             print(airports)
@@ -69,23 +69,13 @@ class LocationsMapView(MapView):
                     self.add_airport(airport)
                     print(airport)
 
-            for airport_key in self.on_map_airports_ids.copy():
-                if airport_key not in self.visible_airports_ids:
-                    self.remove_widget(self.on_map_airports_ids[airport_key])
-                    del self.on_map_airports_ids[airport_key]
+            self.refresh_airports_in_fov()
 
         else:
             if self.focus_on_airport:
-                for airport_key in self.on_map_airports_ids.copy():
-                    if airport_key not in self.visible_airports_ids:
-                        self.remove_widget(self.on_map_airports_ids[airport_key])
-                        del self.on_map_airports_ids[airport_key]
-                        self.focus_on_airport = False
+                self.refresh_airports_in_fov()
             else:
-                for airport_key in self.on_map_airports_ids:
-                    self.remove_widget(self.on_map_airports_ids[airport_key])
-                else:
-                    self.on_map_airports_ids = {}
+                self.remove_airports()
 
         self.visible_airplanes_ids = []
         query = "SELECT * FROM AIRPLANES WHERE LATITUDE > {min_lat:f} AND LATITUDE < {max_lat:f} " \
@@ -95,7 +85,7 @@ class LocationsMapView(MapView):
 
         self.visible_airplanes_ids = [airplane_in_fov[self.airplane_id_index] for airplane_in_fov in airplanes]
 
-        if self.show_airplanes and self.zoom > 5:
+        if (self.show_airplanes or airplane_focus) and self.zoom > 5:
             for airplane in airplanes:
                 if airplane[self.airplane_id_index] in self.on_map_airplanes_ids:
                     continue
@@ -103,23 +93,54 @@ class LocationsMapView(MapView):
                     self.add_airplane(airplane)
                     print(airplane)
 
-            for airplane_key in self.on_map_airplanes_ids.copy():
-                if airplane_key not in self.visible_airplanes_ids:
-                    self.remove_widget(self.on_map_airplanes_ids[airplane_key])
-                    del self.on_map_airplanes_ids[airplane_key]
+            self.refresh_airplanes_in_fov()
 
         else:
             if self.focus_on_airplane:
-                for airplane_key in self.on_map_airplanes_ids.copy():
-                    if airplane_key not in self.visible_airplanes_ids:
-                        self.remove_widget(self.on_map_airplanes_ids[airplane_key])
-                        del self.on_map_airplanes_ids[airplane_key]
-                        self.focus_on_airplane = False
+                self.refresh_airplanes_in_fov()
             else:
-                for airplane_key in self.on_map_airplanes_ids:
+                self.remove_airplanes()
+
+    def refresh_airports_in_fov(self):
+        for airport_key in self.on_map_airports_ids.copy():
+            if airport_key not in self.visible_airports_ids:
+                self.remove_widget(self.on_map_airports_ids[airport_key])
+                del self.on_map_airports_ids[airport_key]
+        else:
+            if len(self.on_map_airports_ids) == 0:
+                self.focus_on_airport = False
+
+    def refresh_airplanes_in_fov(self, updated=False):
+        if updated:
+           db_manager.open_db_connection(db_file_name=r'DATA\AIRCRAFT_COLLISION_FORECAST_SYSTEM.db')
+
+        for airplane_key in self.on_map_airplanes_ids.copy():
+            if airplane_key not in self.visible_airplanes_ids:
+                self.remove_widget(self.on_map_airplanes_ids[airplane_key])
+                del self.on_map_airplanes_ids[airplane_key]
+            else:
+                if updated:
+                    updated_airplane = db_manager.select_data('AIRPLANES', is_open=True, ICAO24=f'"{airplane_key}"')
                     self.remove_widget(self.on_map_airplanes_ids[airplane_key])
-                else:
-                    self.on_map_airplanes_ids = {}
+                    print(updated_airplane)
+                    self.add_airplane(updated_airplane[0])
+        else:
+            if len(self.on_map_airplanes_ids) == 0:
+                self.focus_on_airplane = False
+            if updated:
+                db_manager.close_db_connection()
+
+    def remove_airports(self):
+        for airport_key in self.on_map_airports_ids:
+            self.remove_widget(self.on_map_airports_ids[airport_key])
+        else:
+            self.on_map_airports_ids = {}
+
+    def remove_airplanes(self):
+        for airplane_key in self.on_map_airplanes_ids:
+            self.remove_widget(self.on_map_airplanes_ids[airplane_key])
+        else:
+            self.on_map_airplanes_ids = {}
 
     def add_airport(self, airport):
         marker = self.app.data_manager.airports_tree_manager.get_node(self.app.data_manager.airports_tree, airport[
@@ -132,8 +153,9 @@ class LocationsMapView(MapView):
 
     def add_airplane(self, airplane):
 
-        marker = self.app.data_manager.airplanes_tree_manager.get_node(self.app.data_manager.airplanes_tree, airplane[
-            self.airplane_id_index]).key  # Creates the marker.
+        #marker = self.app.data_manager.airplanes_tree_manager.get_node(self.app.data_manager.airplanes_tree, airplane[
+        #    self.airplane_id_index]).key  # Creates the marker.
+        marker = AirplaneMarker(airplane)
 
         print(airplane[4])
 
