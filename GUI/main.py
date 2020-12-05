@@ -165,7 +165,7 @@ class MainLayout(Widget):
         Opens the settings window.
         :return: None
         """
-        settings_window = ModalView(size_hint=(None, None), size=(500, 400), auto_dismiss=False)
+        settings_window = ModalView(size_hint=(0.5, 0.5), auto_dismiss=False)
         settings_window.add_widget(SettingsView(settings_window))
         settings_window.open()
 
