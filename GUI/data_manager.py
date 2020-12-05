@@ -1,3 +1,6 @@
+import time
+
+from kivy.clock import Clock
 from data_structures import AVLTree
 from GUI.airport_marker import AirportMarker
 from GUI.airplane_marker import AirplaneMarker
@@ -11,7 +14,7 @@ import DATA.database_manager as db_manager
 import os.path
 
 class DataManager:
-    def __init__(self, airport_id_index, airplane_id_index):
+    def __init__(self, airport_id_index, airplane_id_index, username=None, password=None):
         self.app = App.get_running_app()
 
         self.airport_id_index = airport_id_index
@@ -27,8 +30,8 @@ class DataManager:
         # Set the airplane id's index on the mapview object to increment performance.
         self.app.main_layout.locations_map.airplane_id_index = airplane_id_index
 
-        self.api = AircraftData().get_instance()
-        self.airplanes_tree_manager = AVLTree(airplane_id_index)
+        self.api = AircraftData().get_instance(username=username, password=password)
+        self.airplanes_tree_manager = AVLTree(self.airplane_id_index)
         self.airplanes_tree = None
 
     def load_airports(self):
@@ -65,6 +68,8 @@ class DataManager:
 
         airplanes = self.api.get_states().states
 
+        print('Requested Airplanes')
+
         db_manager.open_db_connection(db_path)
 
         for airplane in airplanes:
@@ -76,26 +81,117 @@ class DataManager:
             if curr_airplane[0] is None or curr_airplane[6] is None or curr_airplane[7] is None:
                 continue
 
-            db_manager.add_row(db_path, 'AIRPLANES', keep_open=True,
-                               ICAO24=f"'{curr_airplane[0]}'",
-                               BARO_ALTITUDE=(curr_airplane[1] if curr_airplane[1] is not None else 'NULL'),
-                               CALLSIGN=(f"'{curr_airplane[2]}'" if curr_airplane[2] is not None else 'NULL'),
-                               GEO_ALTITUDE=(curr_airplane[3] if curr_airplane[3] is not None else 'NULL'),
-                               HEADING=(curr_airplane[4] if curr_airplane[4] is not None else 'NULL'),
-                               LAST_CONTACT=(curr_airplane[5] if curr_airplane[5] is not None else 'NULL'),
-                               LATITUDE=(curr_airplane[6] if curr_airplane[6] is not None else 'NULL'),
-                               LONGITUDE=(curr_airplane[7] if curr_airplane[7] is not None else 'NULL'),
-                               ON_GROUND=(0 if not curr_airplane[8] else 1),
-                               ORIGIN_COUNTRY=(f"'{curr_airplane[9]}'" if curr_airplane[9] is not None else 'NULL'),
-                               POSITION_SOURCE=(curr_airplane[10] if curr_airplane[10] is not None else 'NULL'),
-                               SENSORS=(f"'{curr_airplane[11]}'" if curr_airplane[11] is not None else 'NULL'),
-                               SPI=(0 if not curr_airplane[12] else 1),
-                               SQUAWK=(f"'{curr_airplane[13]}'" if curr_airplane[13] is not None else 'NULL'),
-                               TIME_POSITION=(curr_airplane[14] if curr_airplane[14] is not None else 'NULL'),
-                               VELOCITY=(curr_airplane[15] if curr_airplane[15] is not None else 'NULL'),
-                               VERTICAL_RATE=(curr_airplane[16] if curr_airplane[16] is not None else 'NULL'))
+            db_manager.insert_row('AIRPLANES', is_open=True,
+                                  ICAO24=f'"{curr_airplane[0]}"',
+                                  BARO_ALTITUDE=(curr_airplane[1] if curr_airplane[1] is not None else 'NULL'),
+                                  CALLSIGN=(f'"{curr_airplane[2]}"' if curr_airplane[2] is not None else 'NULL'),
+                                  GEO_ALTITUDE=(curr_airplane[3] if curr_airplane[3] is not None else 'NULL'),
+                                  HEADING=(curr_airplane[4] if curr_airplane[4] is not None else 'NULL'),
+                                  LAST_CONTACT=(curr_airplane[5] if curr_airplane[5] is not None else 'NULL'),
+                                  LATITUDE=(curr_airplane[6] if curr_airplane[6] is not None else 'NULL'),
+                                  LONGITUDE=(curr_airplane[7] if curr_airplane[7] is not None else 'NULL'),
+                                  ON_GROUND=(0 if not curr_airplane[8] else 1),
+                                  ORIGIN_COUNTRY=(f'"{curr_airplane[9]}"' if curr_airplane[9] is not None else 'NULL'),
+                                  POSITION_SOURCE=(curr_airplane[10] if curr_airplane[10] is not None else 'NULL'),
+                                  SENSORS=(f'"{curr_airplane[11]}"' if curr_airplane[11] is not None else 'NULL'),
+                                  SPI=(0 if not curr_airplane[12] else 1),
+                                  SQUAWK=(f'"{curr_airplane[13]}"' if curr_airplane[13] is not None else 'NULL'),
+                                  TIME_POSITION=(curr_airplane[14] if curr_airplane[14] is not None else 'NULL'),
+                                  VELOCITY=(curr_airplane[15] if curr_airplane[15] is not None else 'NULL'),
+                                  VERTICAL_RATE=(curr_airplane[16] if curr_airplane[16] is not None else 'NULL'))
 
             self.airplanes_tree = self.airplanes_tree_manager.insert_node(self.airplanes_tree,
                                                                           AirplaneMarker(data=curr_airplane))
 
         db_manager.close_db_connection()
+
+        print('Airplanes Done')
+
+        time.sleep(30)
+        self.update_airplanes()
+
+    def update_airplanes(self):
+
+        stored_airplanes = db_manager.select_data('AIRPLANES', r'DATA\AIRCRAFT_COLLISION_FORECAST_SYSTEM.db', False,
+                                                  'ICAO24')
+        stored_airplanes = [row[0] for row in stored_airplanes]
+
+        print(stored_airplanes)
+
+        airplanes = self.api.get_states().states
+
+        print('Received Airplanes to Update')
+
+        db_manager.open_db_connection(r'DATA\AIRCRAFT_COLLISION_FORECAST_SYSTEM.db')
+
+        for airplane in airplanes:
+            curr_airplane = (airplane.icao24, airplane.baro_altitude, airplane.callsign, airplane.geo_altitude,
+                             airplane.heading, airplane.last_contact, airplane.latitude, airplane.longitude,
+                             airplane.on_ground, airplane.origin_country, airplane.position_source, airplane.sensors,
+                             airplane.spi, airplane.squawk, airplane.time_position, airplane.velocity,
+                             airplane.vertical_rate)
+
+            if curr_airplane[0] in stored_airplanes:
+                db_manager.update_data('AIRPLANES', is_open=True, SET={
+                    'BARO_ALTITUDE': (curr_airplane[1] if curr_airplane[1] is not None else 'NULL'),
+                    'CALLSIGN': (f'"{curr_airplane[2]}"' if curr_airplane[2] is not None else 'NULL'),
+                    'GEO_ALTITUDE': (curr_airplane[3] if curr_airplane[3] is not None else 'NULL'),
+                    'HEADING': (curr_airplane[4] if curr_airplane[4] is not None else 'NULL'),
+                    'LAST_CONTACT': (curr_airplane[5] if curr_airplane[5] is not None else 'NULL'),
+                    'LATITUDE': (curr_airplane[6] if curr_airplane[6] is not None else 'NULL'),
+                    'LONGITUDE': (curr_airplane[7] if curr_airplane[7] is not None else 'NULL'),
+                    'ON_GROUND': (0 if not curr_airplane[8] else 1),
+                    'ORIGIN_COUNTRY': (f'"{curr_airplane[9]}"' if curr_airplane[9] is not None else 'NULL'),
+                    'POSITION_SOURCE': (curr_airplane[10] if curr_airplane[10] is not None else 'NULL'),
+                    'SENSORS': (f'"{curr_airplane[11]}"' if curr_airplane[11] is not None else 'NULL'),
+                    'SPI': (0 if not curr_airplane[12] else 1),
+                    'SQUAWK': (f'"{curr_airplane[13]}"' if curr_airplane[13] is not None else 'NULL'),
+                    'TIME_POSITION': (curr_airplane[14] if curr_airplane[14] is not None else 'NULL'),
+                    'VELOCITY': (curr_airplane[15] if curr_airplane[15] is not None else 'NULL'),
+                    'VERTICAL_RATE': (curr_airplane[16] if curr_airplane[16] is not None else 'NULL')},
+                                       WHERE={'ICAO24': f'"{curr_airplane[0]}"'})
+
+                self.airplanes_tree_manager.update_node(self.airplanes_tree, data=curr_airplane)
+
+                stored_airplanes.remove(curr_airplane[0])
+            else:
+                if curr_airplane[0] is None or curr_airplane[6] is None or curr_airplane[7] is None:
+                    continue
+
+                print(curr_airplane[0])
+                db_manager.insert_row('AIRPLANES', is_open=True,
+                                      ICAO24=f'"{curr_airplane[0]}"',
+                                      BARO_ALTITUDE=(curr_airplane[1] if curr_airplane[1] is not None else 'NULL'),
+                                      CALLSIGN=(f'"{curr_airplane[2]}"' if curr_airplane[2] is not None else 'NULL'),
+                                      GEO_ALTITUDE=(curr_airplane[3] if curr_airplane[3] is not None else 'NULL'),
+                                      HEADING=(curr_airplane[4] if curr_airplane[4] is not None else 'NULL'),
+                                      LAST_CONTACT=(curr_airplane[5] if curr_airplane[5] is not None else 'NULL'),
+                                      LATITUDE=(curr_airplane[6] if curr_airplane[6] is not None else 'NULL'),
+                                      LONGITUDE=(curr_airplane[7] if curr_airplane[7] is not None else 'NULL'),
+                                      ON_GROUND=(0 if not curr_airplane[8] else 1),
+                                      ORIGIN_COUNTRY=(
+                                          f'"{curr_airplane[9]}"' if curr_airplane[9] is not None else 'NULL'),
+                                      POSITION_SOURCE=(curr_airplane[10] if curr_airplane[10] is not None else 'NULL'),
+                                      SENSORS=(f'"{curr_airplane[11]}"' if curr_airplane[11] is not None else 'NULL'),
+                                      SPI=(0 if not curr_airplane[12] else 1),
+                                      SQUAWK=(f'"{curr_airplane[13]}"' if curr_airplane[13] is not None else 'NULL'),
+                                      TIME_POSITION=(curr_airplane[14] if curr_airplane[14] is not None else 'NULL'),
+                                      VELOCITY=(curr_airplane[15] if curr_airplane[15] is not None else 'NULL'),
+                                      VERTICAL_RATE=(curr_airplane[16] if curr_airplane[16] is not None else 'NULL'))
+
+                self.airplanes_tree = self.airplanes_tree_manager.insert_node(self.airplanes_tree,
+                                                                              AirplaneMarker(data=curr_airplane))
+
+        for airplane_icao_24 in stored_airplanes:
+            db_manager.delete_data('AIRPLANES', is_open=True, ICAO24=f'"{airplane_icao_24}"')
+            self.airports_tree_manager.delete_node(self.airplanes_tree, airplane_icao_24)
+
+
+        db_manager.close_db_connection()
+
+        #Clock.schedule_once(self.update_airplanes, 30)
+
+        print('Airplanes Done')
+
+        time.sleep(30)
+        Thread(target=self.update_airplanes).start()

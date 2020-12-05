@@ -1,3 +1,4 @@
+import requests
 from opensky_api import OpenSkyApi
 from math import pi, cos
 import time
@@ -81,22 +82,30 @@ class AircraftData:
         return states
 
     def _get_states_from_api(self, icao24=None, bbox=None):
-        noStates = True
-        while noStates:
-            # try:
-            if bbox:  # only a bbox or icao24, not both
-                states = self.api.get_states(bbox=bbox)
-            elif icao24:
-                states = self.api.get_states(icao24=icao24)
-            else:
-                states = self.api.get_states()
 
-            if not states:
+        while True:
+            try:
+                if bbox:  # only a bbox or icao24, not both
+                    states = self.api.get_states(bbox=bbox)
+                elif icao24:
+                    states = self.api.get_states(icao24=icao24)
+                else:
+                    states = self.api.get_states()
+
+                if not states:
+                    print("Waiting for OpenSky Network API")
+                    time.sleep(self.delay)  # wait for timer before trying to get states again
+                else:
+                    break
+
+            except requests.exceptions.ReadTimeout:
                 # except requests.exceptions.ReadTimeout:
                 print("Waiting for OpenSky Network API")
-                time.sleep(self.delay)  # wait for timer before trying to get states again #TODO: potential issue with sleep
-            else:
-                noStates = False
+                time.sleep(
+                self.delay)  # wait for timer before trying to get states again
+
+
+
         return states
 
     def predict_coordinates(self, currentPos, velocity, heading,

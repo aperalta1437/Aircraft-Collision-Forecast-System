@@ -17,14 +17,128 @@ def create_table(table_name, **kwargs):
     cursor.execute(query)
 
 
-def add_row(db_file_name, table_name, keep_open=False, **kwargs):
-    if not keep_open:
+def select_data(table_name, db_file_name=None, is_open=False, *select_fields, **where_fields):
+    if not is_open:
         db_connection = sqlite3.connect(db_file_name)
         db_cursor = db_connection.cursor()
     else:
         pass
 
-    query = f'INSERT INTO {table_name}('
+    query = f'SELECT '
+
+    select_added = False
+    for field in select_fields:
+        query += f'{field}, '
+        select_added = True
+
+    if select_added:
+        query = f'{query[:-2]} FROM {table_name} WHERE '
+    else:
+        query += f'* FROM {table_name} WHERE '
+
+    where_added = False
+    for key_field in where_fields:
+        query += f'{key_field} = {where_fields[key_field]}, '
+        where_added = True
+
+    if where_added:
+        query = f'{query[:-2]};'
+    else:
+        query = f'{query[:-7]};'
+
+    print(query)
+
+    results = None
+
+    if not is_open:
+        db_cursor.execute(query)
+        results = db_cursor.fetchall()
+        db_connection.close()
+    else:
+        cursor.execute(query)
+        results = cursor.fetchall()
+
+    return results
+
+
+def delete_data(table_name, db_file_name=None, is_open=False, **where_fields):
+    if not is_open:
+        db_connection = sqlite3.connect(db_file_name)
+        db_cursor = db_connection.cursor()
+    else:
+        pass
+
+    query = f'DELETE FROM {table_name} WHERE '
+
+    where_added = False
+    for where_key in where_fields:
+        query += f'{where_key} = {where_fields[where_key]} AND '
+        where_added = True
+
+    if where_added:
+        query = f'{query[:-5]};'
+    else:
+        query = f'{query[:-7]};'
+
+    #print(query)
+
+    if not is_open:
+        db_cursor.execute(query)
+
+        db_connection.commit()
+        db_connection.close()
+    else:
+        cursor.execute(query)
+
+
+def update_data(table_name, db_file_name=None, is_open=False, **set_n_where_fields):
+    if not is_open:
+        db_connection = sqlite3.connect(db_file_name)
+        db_cursor = db_connection.cursor()
+    else:
+        pass
+
+    query = f'UPDATE {table_name} SET '
+
+    set_added = False
+    for set_key in set_n_where_fields['SET']:
+        query += f'{set_key} = {set_n_where_fields["SET"][set_key]}, '
+        set_added = True
+
+    if set_added:
+        query = f'{query[:-2]} WHERE '
+    else:
+        query = f'{query[:-5]} WHERE '
+
+    where_added = False
+    for where_key in set_n_where_fields['WHERE']:
+        query += f'{where_key} = {set_n_where_fields["WHERE"][where_key]} AND '
+        where_added = True
+
+    if where_added:
+        query = f'{query[:-5]};'
+    else:
+        query = f'{query[:-7]};'
+
+    #print(query)
+
+    if not is_open:
+        db_cursor.execute(query)
+
+        db_connection.commit()
+        db_connection.close()
+    else:
+        cursor.execute(query)
+
+
+def insert_row(table_name, db_file_name=None, is_open=False, **kwargs):
+    if not is_open:
+        db_connection = sqlite3.connect(db_file_name)
+        db_cursor = db_connection.cursor()
+    else:
+        pass
+
+    query = f'INSERT INTO {table_name} ('
 
     for field in kwargs:
         query += f'{field}, '
@@ -38,7 +152,7 @@ def add_row(db_file_name, table_name, keep_open=False, **kwargs):
 
     print(query)
 
-    if not keep_open:
+    if not is_open:
         db_cursor.execute(query)
 
         db_connection.commit()
@@ -86,7 +200,9 @@ def execute_query(query, db_file_name=None):
         db_connection = sqlite3.connect(db_file_name)
         db_cursor = db_connection.cursor()
         db_cursor.execute(query)
-        return  db_cursor.fetchall()
+        return db_cursor.fetchall()
+
+
 
 
 

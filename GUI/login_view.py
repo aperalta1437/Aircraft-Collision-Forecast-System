@@ -38,7 +38,8 @@ class LoginView(NewFloatLayout):
             else:
                 if password == result[0][0]:
                     self.login_window.dismiss()
-                    self.app.data_manager = DataManager(airport_id_index=2, airplane_id_index=4)
+                    self.app.data_manager = DataManager(airport_id_index=2, airplane_id_index=0,
+                                                        username='1437ap7320', password='c5jtL8nE@pBG4RZ')
                     Thread(target=self.app.data_manager.load_airports).start()
                 else:
                     show_message_popup('Invalid password')
