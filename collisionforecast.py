@@ -38,6 +38,8 @@ class CollisionForecast:
         potential_collisions = []
         for plane in planes:
             planes_in_range = self._get_planes_in_altitude_range(plane, planes)
+            if not planes_in_range:
+                continue
             potential_collisions = self._get_collisions(plane, planes_in_range)
         return potential_collisions
 
@@ -45,7 +47,10 @@ class CollisionForecast:
         """takes in a list of planes and returns a list of planes who are likely to collide based on altitude range"""
         predict_time = self.config.get_predict_time()
         altitude_range = self.config.get_altitude_range()
-        predicted_target_altitude = target_plane.baro_altitude + (target_plane.vertical_rate * predict_time)
+        if target_plane.baro_altitude and target_plane.vertical_rate:
+            predicted_target_altitude = target_plane.baro_altitude + (target_plane.vertical_rate * predict_time)
+        else:
+            return
         planes_in_range = []
         # each planes estimated height is calculated and check whether if it fits in the target planes estimated altitude range
         for plane in planes:
@@ -63,6 +68,9 @@ class CollisionForecast:
 
     def _get_collisions(self, target_plane, planes, collisions):
         """checks whether the planes will intersect, according to a defined collisions bbox"""
+        if not planes:
+            return collisions
+
         predicted_target_coordinates = self.aircraft_data.predict_coordinates((target_plane.latitude, target_plane.longitude),
                                                                               target_plane.velocity, target_plane.heading,
                                                                               self.config.get_predict_time())

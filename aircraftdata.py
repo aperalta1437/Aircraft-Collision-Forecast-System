@@ -124,8 +124,8 @@ class AircraftData:
         # Define a general distance object.
         d = geopy.distance.distance(kilometers=distanceKm)
         final = d.destination(point=start, bearing=heading)
-        print("predict coordinates, currentpos: {}, newpos: {} ".format(currentPos,
-                                                                                  (final.latitude, final.longitude)))
+        # print("predict coordinates, currentpos: {}, newpos: {} ".format(currentPos,
+        #                                                                           (final.latitude, final.longitude)))
         return final.latitude, final.longitude
 
     def get_bbox(self, source, bbox_settings):  # source can airplane or airport (lat,long)
