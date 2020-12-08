@@ -1,4 +1,5 @@
 #:include locations_mapview.kv
+#:include settings_panel_view.kv
 #:include popups.kv
 #:include login_view.kv
 #:include settings_view.kv
@@ -12,6 +13,7 @@
     locations_map: locations_map
     airports_search_bar: airports_search_bar
     airplanes_search_bar: airplanes_search_bar
+    settings_panel: settings_panel
 
     NewBoxLayout:
         size: root.width, root.height
@@ -56,6 +58,7 @@
                 pos_hint: {"x": 0.33, "y": 0.94}
                 size_hint: 0.65, 0.05
                 on_text: root.get_airport_suggestions()
+                multiline: False
 
             Label:
                 color: 0,0,0,1
@@ -70,6 +73,19 @@
                 pos_hint: {"x": 0.33, "y": 0.87}
                 size_hint: 0.65, 0.05
                 on_text: root.get_airplane_suggestions()
+                multiline: False
+
+            Label:
+                color: 0,0,0,1
+                font_size: "20sp"
+                pos_hint: {"x": 0.35, "y": 0.6}
+                size_hint: 0.3, 0.05
+                text: "Collision Forecast Settings"
+
+            SettingsPanelView:
+                id: settings_panel
+                size_hint: 0.9, 0.3
+                pos_hint: {"x": 0.05, "y": 0.3}
 
             Label:
                 color: 0,0,0,1

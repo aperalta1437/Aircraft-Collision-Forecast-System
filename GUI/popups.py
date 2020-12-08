@@ -18,7 +18,7 @@ class MessagePopup(NewFloatLayout):
 
 
 def show_message_popup(message, width_hint=0.33, height_hint=0.3):
-    popup_window = Popup(title="INFO", size_hint=(width_hint, height_hint))
+    popup_window = Popup(title="INFO", size_hint=(0.3, 0.3))
     popup_content = MessagePopup(popup_window, message)
     popup_content.btn_close_message_popup.size_hint_x = width_hint
     popup_content.btn_close_message_popup.size_hint_y = None
@@ -45,7 +45,7 @@ class YesNoPopup(NewFloatLayout):
 
 
 def show_question_popup(question, condition_function):
-    popup_window = ModalView(size_hint=(None, None), size=(400, 200), auto_dismiss=False)
+    popup_window = ModalView(size_hint=(0.3, 0.3), auto_dismiss=False)
     popup_layout = YesNoPopup(popup_window, condition_function, question)
     popup_window.add_widget(popup_layout)
     popup_window.open()
@@ -76,7 +76,7 @@ class LoadingPopup(NewFloatLayout):
 
 
 def show_loading_popup(max=1):
-    popup_window = ModalView(size_hint=(None, None), size=(350, 120), auto_dismiss=False)
+    popup_window = ModalView(size_hint=(0.2, 0.1), auto_dismiss=False)
     popup_layout = LoadingPopup(popup_window, max)
     popup_window.add_widget(popup_layout)
     popup_window.open()

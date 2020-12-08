@@ -1,0 +1,161 @@
+<ConfigSettingInput@TextInput>:
+    size_hint: 0.5,0.5
+    pos_hint: {"center_y": 0.5}
+    font_size: "8dp"
+    multiline: False
+
+<ConfigSettingLabel@Label>:
+    color: 0,0,0,1
+    pos_hint: {"top": 1}
+    font_size: "8dp"
+    multiline: True
+
+<SettingsPanelView>:
+
+    predict_time : time
+    altitude_range : altitude_range
+
+    ap_bbox_min_lat : ap_bbox_min_lat
+    ap_bbox_max_lat : ap_bbox_max_lat
+    ap_bbox_min_long : ap_bbox_min_long
+    ap_bbox_max_long : ap_bbox_max_long
+
+    ac_bbox_min_lat : ac_bbox_min_lat
+    ac_bbox_max_lat : ac_bbox_max_lat
+    ac_bbox_min_long : ac_bbox_min_long
+    ac_bbox_max_long : ac_bbox_max_long
+
+    c_bbox_min_lat : c_bbox_min_lat
+    c_bbox_max_lat : c_bbox_max_lat
+    c_bbox_min_long : c_bbox_min_long
+    c_bbox_max_long : c_bbox_max_long
+
+    BoxLayout:
+        orientation: "vertical"
+        padding: [5, 5]
+
+        NewGridLayout:
+            cols:5
+            cols_minimum: {0:100, 1:30, 2:30, 3:30, 4:30, 5:30}
+            padding: [10, 10]
+            spacing: 5
+
+            ConfigSettingLabel:
+                text: "Predict Time (seconds):"
+
+            ConfigSettingInput:
+                id: time
+                text: time.text
+
+            Widget:
+
+            Widget:
+
+            Widget:
+
+
+            ConfigSettingLabel:
+                text: "Barometric Altitude Range (meters):"
+
+            ConfigSettingInput:
+                id: altitude_range
+                text: altitude_range.text
+                multiline: False
+
+            Widget:
+
+            Widget:
+
+            Widget:
+
+
+
+            Widget:
+
+            ConfigSettingLabel:
+                text: "Min Latitude"
+
+            ConfigSettingLabel:
+                text: "Max Latitude"
+
+            ConfigSettingLabel:
+                text: "Min Longitude"
+
+            ConfigSettingLabel:
+                text: "Max Longitude"
+
+
+
+            ConfigSettingLabel:
+                text: "Airport Bounding Box (meters):"
+
+            ConfigSettingInput:
+                id : ap_bbox_min_lat
+                text: ap_bbox_min_lat.text
+
+            ConfigSettingInput:
+                id : ap_bbox_max_lat
+                text: ap_bbox_max_lat.text
+
+            ConfigSettingInput:
+                id : ap_bbox_min_long
+                text: ap_bbox_min_long.text
+
+            ConfigSettingInput:
+                id : ap_bbox_max_long
+                text: ap_bbox_max_long.text
+
+
+
+            ConfigSettingLabel:
+                text: "Aircraft Bounding Box (meters):"
+
+            ConfigSettingInput:
+                id : ac_bbox_min_lat
+                text: ac_bbox_min_lat.text
+                multiline:False
+
+            ConfigSettingInput:
+                id : ac_bbox_max_lat
+                text: ac_bbox_max_lat.text
+                multiline:False
+
+            ConfigSettingInput:
+                id : ac_bbox_min_long
+                text: ac_bbox_min_long.text
+                multiline:False
+
+            ConfigSettingInput:
+                id : ac_bbox_max_long
+                text: ac_bbox_max_long.text
+                multiline:False
+
+
+            ConfigSettingLabel:
+                text: "Collision Bounding Box (meters):"
+
+            ConfigSettingInput:
+                id : c_bbox_min_lat
+                text: c_bbox_min_lat.text
+                multiline:False
+
+            ConfigSettingInput:
+                id : c_bbox_max_lat
+                text: c_bbox_max_lat.text
+                multiline:False
+
+            ConfigSettingInput:
+                id : c_bbox_min_long
+                text: c_bbox_min_long.text
+                multiline:False
+
+            ConfigSettingInput:
+                id : c_bbox_max_long
+                text: c_bbox_max_long.text
+                multiline:False
+
+        Button:
+            size_hint: (0.2, 0.2)
+            pos_hint: {"center_x":0.5}
+            text: "Apply"
+            on_press: root.apply_btn()
