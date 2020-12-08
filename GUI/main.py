@@ -190,10 +190,16 @@ class MainLayout(Widget):
         Cleans the airplanes database information, deletes the rotated airplanes images and closes the application.
         :return: None
         """
+        BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-        clean_table(r'DATA\AIRCRAFT_COLLISION_FORECAST_SYSTEM.db', 'AIRPLANES')
+        db_path = os.path.join(BASE_DIR, "..", "DATA", "AIRCRAFT_COLLISION_FORECAST_SYSTEM.db")
+        clean_table(db_path, 'AIRPLANES')
 
-        img_path = 'GUI\\IMAGE\\'
+        BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+        img_path = os.path.join(BASE_DIR, "..", "GUI", "IMAGE")
+
+        # img_path = 'GUI\\IMAGE\\'
         img_file_names = [file_name for file_name in listdir(img_path) if isfile(join(img_path, file_name))]
         for file_name in img_file_names:
             if file_name not in ('map_marker.png', 'airplane_marker.png', 'collision_marker.png'):
