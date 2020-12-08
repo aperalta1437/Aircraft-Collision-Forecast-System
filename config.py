@@ -17,10 +17,10 @@ class Config:
             raise Exception("This is a singleton class, cannot instantiate")
         else:
             self._predict_time = 10    # in seconds, it is how far in the future the program will predict collisions
-            self._airport_bbox_settings = (32000, 32000, 32000, 32000)  # in meters, offset from airport, (min_latitude, max_latitude, min_longitude, max_longitude)
-            self._airplane_bbox_settings = (10000, 10000, 10000, 10000)  # in meters, same as above but for a specific target plane
-            self._collision_bbox_settings = (10000, 10000, 10000, 10000)    # in meters, offset from target plane predicted coordinates used for finding collisions
-            self._altitude_range = 10000  # in meters, range in which we consider other planes for collisions
+            self._airport_bbox_settings = (3200000, 3200000, 3200000, 3200000)  # in meters, offset from airport, (min_latitude, max_latitude, min_longitude, max_longitude)
+            self._airplane_bbox_settings = (1000000, 1000000, 1000000, 1000000)  # in meters, same as above but for a specific target plane
+            self._collision_bbox_settings = (1000000, 1000000, 1000000, 1000000)    # in meters, offset from target plane predicted coordinates used for finding collisions
+            self._altitude_range = 1000000  # in meters, range in which we consider other planes for collisions
             Config.__singletonConfig = self
 
     def get_predict_time(self):

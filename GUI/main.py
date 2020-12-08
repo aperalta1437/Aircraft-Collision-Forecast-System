@@ -18,6 +18,7 @@ from GUI.data_manager import DataManager
 from threading import Thread
 import os.path
 from DATA.database_manager import clean_table
+import concurrent.futures
 
 Config.set('kivy', 'exit_on_escape', '0')
 
@@ -109,12 +110,15 @@ class MainLayout(Widget):
         self.locations_map.remove_airplanes()
         self.suggestions_dropdown.select(btn_suggestion.text)
         self.locations_map.zoom = 10
-        print(btn_suggestion.data)
         self.locations_map.center_on(btn_suggestion.data[15], btn_suggestion.data[16])
         self.airports_search_bar.focus = False
         self.locations_map.focus_on_airport = True
         self.locations_map.focus_on_airplane = True
         #self.locations_map.add_airport(btn_suggestion.data)
+        Thread(target=self.app.data_manager.get_potential_collisions,
+               args=(self.app.data_manager.collision_forecaster.get_potential_collisions_from_airport,
+                     (btn_suggestion.data[15], btn_suggestion.data[16]),)).start()
+
         self.locations_map.get_locations_in_fov(airport_focus=True, airplane_focus=True)
 
 
@@ -165,6 +169,8 @@ class MainLayout(Widget):
         self.locations_map.focus_on_airplane = True
         self.locations_map.focus_on_airport = True
         #self.locations_map.add_airplane(btn_suggestion.data)
+        Thread(target=self.app.data_manager.get_potential_collisions,
+               args=(self.app.data_manager.collision_forecaster.get_potential_collisions_from_plane, btn_suggestion.data[0],)).start()
         self.locations_map.get_locations_in_fov(airplane_focus=True, airport_focus=True)
 
     @staticmethod

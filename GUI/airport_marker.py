@@ -1,3 +1,6 @@
+from threading import Thread
+
+from kivy.app import App
 from kivy_garden.mapview import MapMarkerPopup
 from GUI.popups import show_message_popup
 import sys
@@ -14,7 +17,11 @@ class AirportMarker(MapMarkerPopup):
         self.source = source
 
     def on_release(self):
-        print(self.data)
+        app = App.get_running_app()
+        Thread(target=app.data_manager.get_potential_collisions,
+               args=(app.data_manager.collision_forecaster.get_potential_collisions_from_airport,
+                     (self.lat, self.lon),)).start()
+
         airplane_status_message = f"ICAO Code:          {self.data[0]:>20}\n" \
                                   f"IATA Code:          {self.data[1] if self.data[1] is not None else 'None':>20}\n" \
                                   f"Airport Name:       {self.data[2] if self.data[2] is not None else 'None':>20}\n" \

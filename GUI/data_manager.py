@@ -11,6 +11,7 @@ import sqlite3
 from threading import Thread
 from aircraftdata import AircraftData
 import DATA.database_manager as db_manager
+from collisionforecast import CollisionForecast
 import os.path
 
 class DataManager:
@@ -30,7 +31,9 @@ class DataManager:
         # Set the airplane id's index on the mapview object to increment performance.
         self.app.main_layout.locations_map.airplane_id_index = airplane_id_index
 
-        self.api = AircraftData().get_instance(username=username, password=password)
+        self.api = AircraftData.get_instance(username=username, password=password)
+        self.collision_forecaster = CollisionForecast()
+
         self.airplanes_tree_manager = AVLTree(self.airplane_id_index)
         self.airplanes_tree = None
 
@@ -107,9 +110,24 @@ class DataManager:
 
         print('Airplanes Done')
 
-        time.sleep(15)
-        self.update_airplanes()
+        #time.sleep(60)
+        #self.update_airplanes()
 
+
+    def get_potential_collisions(self, collision_function, arg):
+
+        potential_collisions = collision_function(arg)
+
+        print('POTENTIAL COLLISIONS > ', potential_collisions)
+
+        self.app.main_layout.locations_map.potential_collisions = potential_collisions
+
+        #self.app.main_layout.locations_map.get_locations_in_fov()
+
+
+
+
+'''
     def update_airplanes(self):
 
         stored_airplanes = db_manager.select_data('AIRPLANES', r'DATA\AIRCRAFT_COLLISION_FORECAST_SYSTEM.db', False,
@@ -194,5 +212,6 @@ class DataManager:
         print('Airplanes Done')
 
         self.app.main_layout.locations_map.refresh_airplanes_in_fov(updated=True)
-        time.sleep(15)
+        time.sleep(60)
         Thread(target=self.update_airplanes, daemon=True).start()
+'''

@@ -1,11 +1,12 @@
+from kivy.app import App
 from kivy_garden.mapview import MapMarkerPopup
 from GUI.popups import show_message_popup
+from threading import Thread
 
 class AirplaneMarker(MapMarkerPopup):
     def __init__(self, data):
         super(AirplaneMarker, self).__init__()
         self.data = data
-        print('AIRPLANE MARKER CONSTRUTOR')
         self.lat = data[6]
         self.lon = data[7]
 
@@ -13,6 +14,13 @@ class AirplaneMarker(MapMarkerPopup):
         self.source = source
 
     def on_release(self):
+        app = App.get_running_app()
+        Thread(target=app.data_manager.get_potential_collisions, args=(app.data_manager.collision_forecaster.get_potential_collisions_from_plane, self.data[0],)).start()
+
+        #potential_collisions = App.get_running_app().data_manager.collision_forecaster.get_potential_collisions_from_plane(
+        #self.data[0])
+
+        print(self.data[0])
         airplane_status_message =   f"ICAO 24:        {self.data[0]:>20}\n" \
                                     f"Baro Altitude:  {self.data[1] if self.data[1] is not None else 'None':>20}\n" \
                                     f"Call Sign:      {self.data[2] if self.data[2] is not None else 'None':>20}\n" \
