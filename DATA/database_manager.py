@@ -46,7 +46,7 @@ def select_data(table_name, db_file_name=None, is_open=False, *select_fields, **
     else:
         query = f'{query[:-7]};'
 
-    print(query)
+    #print(query)
 
     results = None
 
@@ -150,7 +150,7 @@ def insert_row(table_name, db_file_name=None, is_open=False, **kwargs):
 
     query = f'{query[:-2]});'
 
-    print(query)
+    #print(query)
 
     if not is_open:
         db_cursor.execute(query)

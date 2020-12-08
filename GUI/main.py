@@ -19,6 +19,7 @@ from GUI.data_manager import DataManager
 from threading import Thread
 import os.path
 from DATA.database_manager import clean_table
+import concurrent.futures
 
 Config.set('kivy', 'exit_on_escape', '0')
 
@@ -107,13 +108,22 @@ class MainLayout(Widget):
         :param btn_suggestion: The button carrying the airport's information.
         :return: None
         """
+        self.locations_map.remove_airports()
+        self.locations_map.remove_airplanes()
         self.suggestions_dropdown.select(btn_suggestion.text)
-        self.locations_map.zoom = 8
-        print(btn_suggestion.data)
+        self.locations_map.zoom = 10
         self.locations_map.center_on(btn_suggestion.data[15], btn_suggestion.data[16])
         self.airports_search_bar.focus = False
         self.locations_map.focus_on_airport = True
-        self.locations_map.add_airport(btn_suggestion.data)
+        self.locations_map.focus_on_airplane = True
+        #self.locations_map.add_airport(btn_suggestion.data)
+        Thread(target=self.app.data_manager.get_potential_collisions,
+               args=(self.app.data_manager.collision_forecaster.get_potential_collisions_from_airport,
+                     (btn_suggestion.data[15], btn_suggestion.data[16]),)).start()
+
+        self.locations_map.get_locations_in_fov(airport_focus=True, airplane_focus=True)
+
+
 
     def get_airplane_suggestions(self):
         """
@@ -152,12 +162,18 @@ class MainLayout(Widget):
         :param btn_suggestion: The button carrying the airplane's information.
         :return: None
         """
+        self.locations_map.remove_airports()
+        self.locations_map.remove_airplanes()
         self.suggestions_dropdown.select(btn_suggestion.text)
-        self.locations_map.zoom = 8
+        self.locations_map.zoom = 10
         self.locations_map.center_on(btn_suggestion.data[6], btn_suggestion.data[7])
         self.airports_search_bar.focus = False
         self.locations_map.focus_on_airplane = True
-        self.locations_map.add_airplane(btn_suggestion.data)
+        self.locations_map.focus_on_airport = True
+        #self.locations_map.add_airplane(btn_suggestion.data)
+        Thread(target=self.app.data_manager.get_potential_collisions,
+               args=(self.app.data_manager.collision_forecaster.get_potential_collisions_from_plane, btn_suggestion.data[0],)).start()
+        self.locations_map.get_locations_in_fov(airplane_focus=True, airport_focus=True)
 
     @staticmethod
     def open_settings_window():
@@ -180,7 +196,7 @@ class MainLayout(Widget):
         img_path = 'GUI\\IMAGE\\'
         img_file_names = [file_name for file_name in listdir(img_path) if isfile(join(img_path, file_name))]
         for file_name in img_file_names:
-            if file_name not in ('map_marker.png', 'airplane_marker.png'):
+            if file_name not in ('map_marker.png', 'airplane_marker.png', 'collision_marker.png'):
                 os.remove(img_path + file_name)
         print('Closing app')
         self.app.root_window.close()
