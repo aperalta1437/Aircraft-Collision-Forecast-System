@@ -17,8 +17,8 @@ class MessagePopup(NewFloatLayout):
         super().__init__()
 
 
-def show_message_popup(message, width_hint=0.33, height_hint=0.3):
-    popup_window = Popup(title="INFO", size_hint=(0.3, 0.3))
+def show_message_popup(message, width_hint=0.33, height_hint=0.33):
+    popup_window = Popup(title="INFO", size_hint=(width_hint, height_hint))
     popup_content = MessagePopup(popup_window, message)
     popup_content.btn_close_message_popup.size_hint_x = width_hint
     popup_content.btn_close_message_popup.size_hint_y = None
