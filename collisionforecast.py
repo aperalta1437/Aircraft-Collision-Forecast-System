@@ -1,6 +1,5 @@
 from config import Config
 from aircraftdata import AircraftData
-from graph import Graph
 
 class CollisionForecast:
 
@@ -23,7 +22,7 @@ class CollisionForecast:
                 break
         # list of planes within altitude range of target plane are considered for a collision
         planes_in_range = self._get_planes_in_altitude_range(target_plane, planes)
-        potential_collisions = []   # TODO use graph here instead
+        potential_collisions = []
         self._get_collisions(target_plane, planes_in_range, potential_collisions)
         return potential_collisions
 
@@ -36,7 +35,7 @@ class CollisionForecast:
 
         states = self.aircraft_data.get_states_from_coordinates(airport)
         planes = states.states
-        potential_collisions = []  # TODO use graph here instead
+        potential_collisions = []
         for plane in planes:
             planes_in_range = self._get_planes_in_altitude_range(plane, planes)
             potential_collisions = self._get_collisions(plane, planes_in_range)
@@ -74,7 +73,7 @@ class CollisionForecast:
             predicted_plane_coordinates = self.aircraft_data.predict_coordinates((plane.latitude, plane.longitude),
                                                                               plane.velocity, plane.heading,
                                                                               self.config.get_predict_time())
-            if self._check_bbox_collision(predicted_plane_coordinates, collision_bbox):  #TODO: figure out how to use graphs here
+            if self._check_bbox_collision(predicted_plane_coordinates, collision_bbox):
                 collisions.append((plane.icao24, predicted_plane_coordinates))
 
     def _check_bbox_collision(self, predicted_plane_coordinates, collision_bbox):
@@ -93,16 +92,16 @@ class CollisionForecast:
             return False
         return True
 
-# test code:
-test = CollisionForecast()
-icao24 = "a7b8a1"
-collisions = test.get_potential_collisions_from_plane(icao24)
-if not collisions:
-    print("No Collisions")
-else:
-    print("Potential Collisions")
-    for collision in collisions:
-        print(collision)
+# # test code:
+# test = CollisionForecast()
+# icao24 = "a7b8a1"
+# collisions = test.get_potential_collisions_from_plane(icao24)
+# if not collisions:
+#     print("No Collisions")
+# else:
+#     print("Potential Collisions")
+#     for collision in collisions:
+#         print(collision)
 
 
 
